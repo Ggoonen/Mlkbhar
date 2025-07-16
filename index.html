@@ -1349,7 +1349,7 @@
             width: 100%;
             height: 100%;
             background-color: #080a0d; /* Match body background */
-            display: flex;
+            display: none; /* Changed to none by default */
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -2333,50 +2333,19 @@
                         }
                         updateUIFromPlayerData();
                         window.showSection('mainMenu'); // Show main menu after data is loaded/initialized
-                        loadingOverlay.style.display = 'none'; // Hide loading overlay
                     }, (error) => {
                         console.error("Error reading player data from Firebase:", error);
                         window.showMessage("فشل تحميل بيانات اللاعب من Firebase. قد لا تعمل الميزات بشكل صحيح.");
-                        loadingOverlay.style.display = 'none'; // Hide loading overlay even on error
                     });
                 } else {
                     console.error("userRef is null. Cannot load player data.");
                     window.showMessage("خطأ في تهيئة Firebase. يرجى إعادة تحميل الصفحة.");
-                    loadingOverlay.style.display = 'none'; // Hide loading overlay on critical error
                 }
             } catch (error) {
                 console.error("Critical error in loadPlayerDataFromFirebase:", error);
                 window.showMessage("حدث خطأ غير متوقع أثناء تحميل بيانات اللعبة. يرجى إعادة تحميل الصفحة.");
-                loadingOverlay.style.display = 'none'; // Hide loading overlay on critical error
             }
         }
-
-        // Authentication listener
-        onAuthStateChanged(auth, async (user) => {
-            try {
-                if (user) {
-                    userId = user.uid;
-                    userRef = ref(db, `artifacts/${appId}/users/${userId}/playerData`);
-                    playersRef = ref(db, `artifacts/${appId}/public/data/players`);
-                    globalAttacksRef = ref(db, `artifacts/${appId}/public/data/globalAttacks`);
-                    isAuthReady = true;
-                    loadPlayerDataFromFirebase(); // Load data once authenticated
-                    setupPublicDataListeners(); // Setup listeners for public data
-                    setInterval(updatePublicPlayerData, 10000); // Update public data every 10 seconds
-                } else {
-                    // Sign in anonymously if no user or token
-                    if (initialAuthToken) {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                }
-            } catch (error) {
-                console.error("Firebase Auth Error during sign-in:", error);
-                window.showMessage("فشل تسجيل الدخول إلى Firebase. قد لا تعمل الميزات بشكل صحيح.");
-                loadingOverlay.style.display = 'none'; // Hide loading overlay on auth error
-            }
-        });
 
         function setupPublicDataListeners() {
             try {
@@ -3095,7 +3064,7 @@
                 shipSelectionOptions.innerHTML = '';
                 const ships = [
                     { id: 'ship1', name: 'السفينة الأساسية', obj: playerData.ship1 },
-                    { id: 'ship2', name: 'السفينة الثانية', obj: playerData.ship2 },
+                    { id: 'ship2', name: 'السفينة الثانية', obj: playerData.ship2 }, // Corrected to playerData.ship2
                     { id: 'ship3', name: 'السفينة الثالثة', obj: playerData.ship3 }
                 ];
 
@@ -4017,9 +3986,38 @@
         function handleConfirmChangeFleetNameClick() { confirmChangeFleetName(); }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            loadingOverlay = document.getElementById('loadingOverlay');
-            loadingOverlay.style.display = 'flex'; // Show loading overlay immediately
+            // Initialize Firebase app and services
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getDatabase(app);
 
+            // Authentication listener
+            onAuthStateChanged(auth, async (user) => {
+                try {
+                    if (user) {
+                        userId = user.uid;
+                        userRef = ref(db, `artifacts/${appId}/users/${userId}/playerData`);
+                        playersRef = ref(db, `artifacts/${appId}/public/data/players`);
+                        globalAttacksRef = ref(db, `artifacts/${appId}/public/data/globalAttacks`);
+                        isAuthReady = true;
+                        loadPlayerDataFromFirebase(); // Load data once authenticated
+                        setupPublicDataListeners(); // Setup listeners for public data
+                        setInterval(updatePublicPlayerData, 10000); // Update public data every 10 seconds
+                    } else {
+                        // Sign in anonymously if no user or token
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Firebase Auth Error during sign-in:", error);
+                    window.showMessage("فشل تسجيل الدخول إلى Firebase. قد لا تعمل الميزات بشكل صحيح.");
+                }
+            });
+
+            // Initialize all DOM elements after Firebase setup
             playerPowerEl = document.getElementById('playerPower');
             playerMoneyEl = document.getElementById('playerMoney');
             playerKeysEl = document.getElementById('playerKeys');
