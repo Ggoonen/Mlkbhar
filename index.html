@@ -1,1056 +1,1220 @@
-```html
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="dark">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>محفظتي الذهبية - إدارة المالية الشخصية</title>
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيقي المالي - One UI</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Arabic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- html2pdf.js Library for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         samsung: {
-                            bgDark: '#0a0a0c',
-                            cardDark: '#16181d',
-                            accent: '#3e82f7',
-                            income: '#10b981',
-                            expense: '#ef4444',
-                            installment: '#f59e0b',
-                            salary: '#8b5cf6'
+                            bgDark: '#0B0F19',
+                            cardDark: '#161C2E',
+                            cardLight: '#1E2640',
+                            accent: '#3B82F6',
+                            accentHover: '#2563EB',
+                            borderDark: '#2D3748',
+                            income: '#10B981',
+                            expense: '#EF4444',
+                            installment: '#F59E0B',
+                            salary: '#8B5CF6',
+                            outing: '#EC4899'
                         }
                     },
                     fontFamily: {
-                        sans: ['Tajawal', 'sans-serif'],
-                        mono: ['Consolas', 'Monaco', 'Courier New', 'monospace']
+                        arabic: ['Tajawal', 'Cairo', 'sans-serif'],
+                        number: ['Cairo', 'Tajawal', 'sans-serif']
                     }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <!-- Chart.js CDN for visual reports -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
-        /* A55 & One UI Design Polish */
         body {
             font-family: 'Tajawal', sans-serif;
+            background-color: #0B0F19;
+            color: #F3F4F6;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            touch-action: manipulation;
         }
-        /* Financial Monospace Font for All Numbers */
-        .num-financial {
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -0.5px;
+        .num-font {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            font-weight: 700;
         }
-        /* Hide scrollbars for app-like clean feel */
-        ::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-            background: transparent;
+        .tab-content {
+            display: none;
         }
-        .bottom-sheet {
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        .tab-content.active {
+            display: block;
         }
-        .safe-bottom {
-            padding-bottom: env(safe-area-inset-bottom, 20px);
+        .oneui-card {
+            background-color: #161C2E;
+            border: 1px solid #2D3748;
+            border-radius: 1.25rem;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
         }
-        .glass-card {
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+        .oneui-btn {
+            border-radius: 0.875rem;
+            transition: all 0.2s ease;
+        }
+        .oneui-btn:active {
+            transform: scale(0.96);
+        }
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-samsung-bgDark text-gray-900 dark:text-gray-100 min-h-screen pb-24 flex flex-col transition-colors duration-200">
+<body class="pb-24 max-w-md mx-auto min-h-screen relative overflow-x-hidden">
 
-    <!-- Header / Status Bar Spacing -->
-    <header class="sticky top-0 z-30 bg-white/80 dark:bg-samsung-cardDark/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+    <!-- TOP BAR -->
+    <header class="sticky top-0 z-30 bg-samsung-bgDark/90 backdrop-blur-md border-b border-samsung-borderDark/60 px-4 py-3 flex justify-between items-center">
         <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-500/20">
+            <div class="w-8 h-8 rounded-xl bg-samsung-accent/20 border border-samsung-accent/40 flex items-center justify-center text-samsung-accent text-sm">
                 <i class="fa-solid fa-wallet"></i>
             </div>
             <div>
-                <h1 id="appTitleHeader" class="text-base font-bold leading-tight">محفظتي الذهبية</h1>
-                <p id="currentCurrencyBadge" class="text-xs text-gray-500 dark:text-gray-400">العملة: دينار عراقي (IQD)</p>
+                <h1 id="app-title-display" class="text-xs font-black text-white leading-tight">تطبيقي المالي</h1>
+                <p class="text-[9px] text-gray-400 font-bold">Samsung Galaxy A55</p>
             </div>
         </div>
-        <div class="flex items-center gap-1">
-            <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center active:scale-95 transition">
-                <i class="fa-solid fa-moon dark:hidden"></i>
-                <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
-            </button>
-            <button onclick="switchTab('settings')" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center active:scale-95 transition">
-                <i class="fa-solid fa-gear"></i>
-            </button>
-        </div>
+        <button onclick="openSettingsModal()" class="w-8 h-8 rounded-xl bg-samsung-cardDark border border-samsung-borderDark flex items-center justify-center text-gray-300 text-xs hover:text-white">
+            <i class="fa-solid fa-gear"></i>
+        </button>
     </header>
 
-    <!-- Main Content Containers -->
-    <main class="flex-1 px-4 pt-3 max-w-md mx-auto w-full">
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toast-notification" class="fixed top-14 left-0 right-0 z-50 px-4 transition-all duration-300 pointer-events-none opacity-0 -translate-y-4 flex justify-center">
+        <div id="toast-body" class="bg-red-600/95 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl backdrop-blur-md border border-red-400/30 flex items-center gap-2 max-w-sm">
+            <i id="toast-icon" class="fa-solid fa-circle-exclamation text-base"></i>
+            <span id="toast-message">رسالة إشعار</span>
+        </div>
+    </div>
 
-        <!-- TAB 1: الرئيسية (DASHBOARD) -->
-        <section id="tab-dashboard" class="space-y-4">
-            <!-- Total Actual Money Card -->
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden">
-                <div class="absolute -left-6 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl"></div>
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="p-3.5 space-y-4">
+
+        <!-- ==================== TAB 1: HOME (الرئيسية) ==================== -->
+        <section id="tab-home" class="tab-content active space-y-3.5">
+            <!-- Total Net Worth Card -->
+            <div class="oneui-card p-4 bg-gradient-to-br from-samsung-cardLight via-samsung-cardDark to-samsung-cardDark relative overflow-hidden">
                 <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-blue-100">إجمالي الأموال الفعلية</span>
-                    <span class="bg-white/20 text-xs px-2.5 py-0.5 rounded-full backdrop-blur-md">متاحة الآن</span>
+                    <span class="text-[10px] font-bold text-gray-400 bg-samsung-bgDark/60 px-2.5 py-1 rounded-full border border-samsung-borderDark">إجمالي الأموال المتاحة فعلياً</span>
+                    <button onclick="openSetInitialBalancesModal()" class="text-[10px] font-bold text-samsung-accent bg-samsung-accent/10 px-2.5 py-1 rounded-full border border-samsung-accent/30">
+                        <i class="fa-solid fa-pen-to-square"></i> الرصيد الأولي
+                    </button>
                 </div>
-                <div id="dashTotalActual" class="text-3xl font-extrabold tracking-tight my-1 num-financial">0 <span class="text-sm font-normal">IQD</span></div>
-                <p class="text-xs text-blue-100/80 mb-4">مجموع رصيد المحفظة الشخصية والبنك المنزلي</p>
+                <h2 id="total-actual-money" class="num-font text-2xl font-black text-white my-1">0 IQD</h2>
+                <p class="text-[9px] text-gray-400">مجموع السيولة النقدية في المحفظة والبنك المنزلي</p>
 
-                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-white/15 text-xs">
-                    <div class="bg-black/20 p-2.5 rounded-2xl">
-                        <div class="text-blue-200 text-[10px] mb-0.5"><i class="fa-solid fa-wallet text-amber-300 ml-1"></i>المحفظة الشخصية</div>
-                        <div id="dashWalletBalance" class="font-bold text-sm num-financial">0 IQD</div>
+                <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-samsung-borderDark/80">
+                    <div class="bg-samsung-bgDark/50 p-2.5 rounded-xl border border-samsung-borderDark/50">
+                        <span class="text-[9px] font-bold text-gray-400 block"><i class="fa-solid fa-wallet text-samsung-accent"></i> المحفظة الشخصية</span>
+                        <span id="home-wallet-balance" class="num-font text-xs font-extrabold text-white">0 IQD</span>
                     </div>
-                    <div class="bg-black/20 p-2.5 rounded-2xl">
-                        <div class="text-blue-200 text-[10px] mb-0.5"><i class="fa-solid fa-building-columns text-emerald-300 ml-1"></i>البنك المنزلي</div>
-                        <div id="dashBankBalance" class="font-bold text-sm num-financial">0 IQD</div>
+                    <div class="bg-samsung-bgDark/50 p-2.5 rounded-xl border border-samsung-borderDark/50">
+                        <span class="text-[9px] font-bold text-gray-400 block"><i class="fa-solid fa-building-columns text-emerald-400"></i> البنك المنزلي</span>
+                        <span id="home-bank-balance" class="num-font text-xs font-extrabold text-white">0 IQD</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Internal Transfer Quick Action Button -->
-            <button onclick="openTransferModal()" class="w-full bg-white dark:bg-samsung-cardDark border border-gray-200 dark:border-gray-800 p-3 rounded-2xl flex items-center justify-between text-sm font-medium shadow-sm active:scale-[0.98] transition">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
-                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
-                    </div>
-                    <span>تحويل داخلي بين الحسابين</span>
-                </div>
-                <i class="fa-solid fa-chevron-left text-xs text-gray-400"></i>
+            <!-- Internal Transfer Quick Action -->
+            <button onclick="openTransferModal()" class="w-full oneui-card p-3 flex items-center justify-between text-xs font-bold text-samsung-accent bg-samsung-accent/10 border-samsung-accent/30 hover:bg-samsung-accent/20 transition">
+                <span class="flex items-center gap-2"><i class="fa-solid fa-arrows-rotate text-sm"></i> إجراء تحويل داخلي بين الحسابين</span>
+                <i class="fa-solid fa-chevron-left text-[10px]"></i>
             </button>
 
-            <!-- Monthly Overview Grid -->
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-white dark:bg-samsung-cardDark p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                    <div class="flex items-center gap-2 text-emerald-500 mb-1">
-                        <i class="fa-solid fa-circle-arrow-down text-xs"></i>
-                        <span class="text-xs font-medium text-gray-500 dark:text-gray-400">دخل الشهر</span>
-                    </div>
-                    <div id="dashMonthIncome" class="text-base font-bold text-emerald-600 dark:text-emerald-400 num-financial">0 IQD</div>
+            <!-- Monthly Summary Hero Grid -->
+            <div class="grid grid-cols-2 gap-2.5">
+                <div class="oneui-card p-3 border-r-4 border-r-samsung-income">
+                    <span class="text-[9px] font-bold text-gray-400 block mb-0.5">دخل هذا الشهر</span>
+                    <p id="home-monthly-income" class="num-font text-sm font-black text-samsung-income">0 IQD</p>
                 </div>
-                <div class="bg-white dark:bg-samsung-cardDark p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-                    <div class="flex items-center gap-2 text-rose-500 mb-1">
-                        <i class="fa-solid fa-circle-arrow-up text-xs"></i>
-                        <span class="text-xs font-medium text-gray-500 dark:text-gray-400">مصروفات الشهر</span>
-                    </div>
-                    <div id="dashMonthExpense" class="text-base font-bold text-rose-600 dark:text-rose-400 num-financial">0 IQD</div>
+                <div class="oneui-card p-3 border-r-4 border-r-samsung-expense">
+                    <span class="text-[9px] font-bold text-gray-400 block mb-0.5">مصروف هذا الشهر</span>
+                    <p id="home-monthly-expense" class="num-font text-sm font-black text-samsung-expense">0 IQD</p>
                 </div>
-            </div>
-
-            <!-- Receivables & Obligations Highlight -->
-            <div class="space-y-2">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">المستحقات والالتزامات</h3>
-                
-                <!-- Pending Uncollected Salaries -->
-                <div class="bg-amber-500/10 border border-amber-500/20 p-3.5 rounded-2xl flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-hand-holding-dollar"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">مستحقات ورواتب غير مستلمة</div>
-                            <div id="dashUncollectedSalaries" class="text-sm font-bold text-amber-600 dark:text-amber-400 num-financial">0 IQD</div>
-                        </div>
-                    </div>
-                    <button onclick="switchTab('salaries')" class="text-xs bg-amber-500 text-white px-3 py-1.5 rounded-xl font-medium active:scale-95">عرض</button>
+                <div class="oneui-card p-3 border-r-4 border-r-samsung-installment">
+                    <span class="text-[9px] font-bold text-gray-400 block mb-0.5">الأقساط المتبقية</span>
+                    <p id="home-total-installments-remaining" class="num-font text-sm font-black text-samsung-installment">0 IQD</p>
                 </div>
-
-                <!-- Remaining Installment Debts -->
-                <div class="bg-purple-500/10 border border-purple-500/20 p-3.5 rounded-2xl flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-500 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-file-invoice-dollar"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">إجمالي الأقساط المتبقية</div>
-                            <div id="dashRemainingInstallments" class="text-sm font-bold text-purple-600 dark:text-purple-400 num-financial">0 IQD</div>
-                        </div>
-                    </div>
-                    <button onclick="switchTab('installments')" class="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-xl font-medium active:scale-95">تسديد</button>
+                <div class="oneui-card p-3 border-r-4 border-r-samsung-salary">
+                    <span class="text-[9px] font-bold text-gray-400 block mb-0.5">مستحقات لم تُستلم</span>
+                    <p id="home-unclaimed-salaries" class="num-font text-sm font-black text-samsung-salary">0 IQD</p>
                 </div>
             </div>
 
-            <!-- Next Due Installment Alert -->
-            <div class="bg-white dark:bg-samsung-cardDark border border-gray-200 dark:border-gray-800 p-4 rounded-2xl shadow-sm">
-                <div class="text-xs font-bold text-gray-500 dark:text-gray-400 mb-2 flex items-center justify-between">
-                    <span>أقرب التزام قادم</span>
-                    <i class="fa-regular fa-clock text-blue-500"></i>
+            <!-- Recent Transactions Mini Log -->
+            <div class="oneui-card p-3.5 space-y-2.5">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-extrabold text-white"><i class="fa-solid fa-clock-rotate-left text-samsung-accent"></i> آخر العمليات المالية</h3>
+                    <button onclick="switchTab('tab-expenses')" class="text-[10px] font-bold text-samsung-accent">عرض الكل</button>
                 </div>
-                <div id="dashNextDueContainer" class="text-sm text-gray-500 dark:text-gray-400">
-                    لا يوجد أقساط قادمة حالياً.
-                </div>
-            </div>
-
-            <!-- Recent Operations Log Preview -->
-            <div class="bg-white dark:bg-samsung-cardDark p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-sm font-bold">آخر العمليات المالية</h3>
-                    <button onclick="openLogsModal()" class="text-xs text-blue-500 font-medium">عرض الكل</button>
-                </div>
-                <div id="dashRecentLogs" class="space-y-2 text-xs divide-y divide-gray-100 dark:divide-gray-800">
-                    <div class="py-2 text-center text-gray-400">لا توجد عمليات مسجلة بعد.</div>
+                <div id="home-recent-transactions-list" class="space-y-2">
+                    <p class="text-[10px] text-gray-500 text-center py-2">لا توجد عمليات مسجلة حديثاً</p>
                 </div>
             </div>
         </section>
 
-        <!-- TAB 2: الدخل (INCOME) -->
-        <section id="tab-income" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold">إدارة الدخل والتمويل</h2>
-                <button onclick="openAddIncomeModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95">
-                    <i class="fa-solid fa-plus"></i> إضافة دخل جديد
+        <!-- ==================== TAB 2: INCOME (الدخل) ==================== -->
+        <section id="tab-income" class="tab-content space-y-3.5">
+            <div class="flex justify-between items-center bg-samsung-cardDark p-3 rounded-2xl border border-samsung-borderDark">
+                <div>
+                    <h2 class="text-xs font-extrabold text-white">إدارة مصادر الدخل</h2>
+                    <p class="text-[10px] text-gray-400">تسجيل وإيداع الأموال الفعلية</p>
+                </div>
+                <button onclick="openAddIncomeModal()" class="oneui-btn bg-samsung-income text-white px-3.5 py-1.5 text-xs shadow-md shadow-samsung-income/20">
+                    <i class="fa-solid fa-plus text-[10px]"></i> إضافة دخل
                 </button>
             </div>
 
-            <!-- Account Selector Filter -->
-            <div class="flex gap-2 bg-gray-200 dark:bg-gray-800 p-1 rounded-2xl text-xs font-medium">
-                <button onclick="filterIncomeByAccount('all')" id="incFilter-all" class="flex-1 py-1.5 rounded-xl bg-white dark:bg-samsung-cardDark shadow-sm font-bold text-center">الكل</button>
-                <button onclick="filterIncomeByAccount('wallet')" id="incFilter-wallet" class="flex-1 py-1.5 rounded-xl text-center text-gray-500">المحفظة</button>
-                <button onclick="filterIncomeByAccount('bank')" id="incFilter-bank" class="flex-1 py-1.5 rounded-xl text-center text-gray-500">البنك</button>
-            </div>
-
-            <!-- Income History List -->
-            <div id="incomeList" class="space-y-2">
-                <!-- Dynamic Items -->
-            </div>
+            <div id="incomes-list-container" class="space-y-2.5"></div>
         </section>
 
-        <!-- TAB 3: المصروفات (EXPENSES) -->
-        <section id="tab-expenses" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold">تسجيل المصروفات</h2>
-                <button onclick="openAddExpenseModal()" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-rose-600/20 active:scale-95">
-                    <i class="fa-solid fa-plus"></i> تسجيل مصروف
+        <!-- ==================== TAB 3: EXPENSES (المصاريف) ==================== -->
+        <section id="tab-expenses" class="tab-content space-y-3.5">
+            <div class="flex justify-between items-center bg-samsung-cardDark p-3 rounded-2xl border border-samsung-borderDark">
+                <div>
+                    <h2 class="text-xs font-extrabold text-white">سجل المصاريف</h2>
+                    <p class="text-[10px] text-gray-400">تتبع كافة المشتريات والسحوبات اليومية</p>
+                </div>
+                <button onclick="openAddExpenseModal()" class="oneui-btn bg-samsung-expense text-white px-3.5 py-1.5 text-xs shadow-md shadow-samsung-expense/20">
+                    <i class="fa-solid fa-plus text-[10px]"></i> مصروف جديد
                 </button>
             </div>
 
-            <!-- Expense Filters -->
-            <div class="flex gap-2">
-                <input type="month" id="expenseMonthFilter" onchange="renderExpenses()" class="bg-white dark:bg-samsung-cardDark border border-gray-200 dark:border-gray-800 rounded-2xl px-3 py-1.5 text-xs flex-1 num-financial">
-                <select id="expenseCategoryFilter" onchange="renderExpenses()" class="bg-white dark:bg-samsung-cardDark border border-gray-200 dark:border-gray-800 rounded-2xl px-3 py-1.5 text-xs flex-1">
-                    <option value="all">كل التصنيفات</option>
-                </select>
-            </div>
-
-            <!-- Expenses List -->
-            <div id="expenseList" class="space-y-2">
-                <!-- Dynamic Items -->
-            </div>
+            <div id="expenses-list-container" class="space-y-2.5"></div>
         </section>
 
-        <!-- TAB 4: الأقساط (INSTALLMENTS) -->
-        <section id="tab-installments" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold">إدارة الأقساط والالتزامات</h2>
-                <button onclick="openAddInstallmentModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-purple-600/20 active:scale-95">
-                    <i class="fa-solid fa-plus"></i> إنشاء قسط جديد
+        <!-- ==================== TAB 4: INSTALLMENTS (الأقساط) ==================== -->
+        <section id="tab-installments" class="tab-content space-y-3.5">
+            <div class="flex justify-between items-center bg-samsung-cardDark p-3 rounded-2xl border border-samsung-borderDark">
+                <div>
+                    <h2 class="text-xs font-extrabold text-white">إدارة الأقساط والالتزامات</h2>
+                    <p class="text-[10px] text-gray-400">جدولة الدفعات ومتابعة السداد</p>
+                </div>
+                <button onclick="openAddInstallmentModal()" class="oneui-btn bg-samsung-installment text-white px-3.5 py-1.5 text-xs shadow-md shadow-samsung-installment/20">
+                    <i class="fa-solid fa-plus text-[10px]"></i> قسط جديد
                 </button>
             </div>
 
-            <!-- Installment Cards List -->
-            <div id="installmentList" class="space-y-3">
-                <!-- Dynamic Installment Cards -->
-            </div>
+            <div id="installments-list-container" class="space-y-3"></div>
         </section>
 
-        <!-- TAB 5: الرواتب والمستحقات (SALARIES) -->
-        <section id="tab-salaries" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold">إدارة الرواتب والمستحقات</h2>
-                <button onclick="openAddSalarySourceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/20 active:scale-95">
-                    <i class="fa-solid fa-plus"></i> مصدر راتب جديد
-                </button>
-            </div>
-
-            <!-- Accumulated Receivables Highlight -->
-            <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-4 text-white shadow-md">
-                <div class="text-xs font-medium text-amber-100">إجمالي المستحقات المتراكمة غير المستلمة</div>
-                <div id="salaryTotalUncollected" class="text-2xl font-black mt-1 num-financial">0 IQD</div>
-                <p class="text-[10px] text-amber-100/80 mt-1">لا تدخل هذه الأموال في المحفظة إلا بعد إتمام عملية الاستلام الفعلي.</p>
-            </div>
-
-            <!-- Salary Sources List -->
-            <div id="salarySourceList" class="space-y-3">
-                <!-- Dynamic Sources Cards -->
-            </div>
-        </section>
-
-        <!-- TAB 6: التقارير والإعدادات (SETTINGS & REPORTS) -->
-        <section id="tab-settings" class="hidden space-y-4">
-            <h2 class="text-lg font-bold">التقارير والإعدادات</h2>
-
-            <!-- Analytics Visual Chart -->
-            <div class="bg-white dark:bg-samsung-cardDark p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
-                <h3 class="text-xs font-bold text-gray-500 mb-3">تحليل المصروفات حسب التصنيف</h3>
-                <div class="w-full h-48">
-                    <canvas id="expenseChart"></canvas>
-                </div>
-            </div>
-
-            <!-- System Settings Options -->
-            <div class="bg-white dark:bg-samsung-cardDark rounded-2xl border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 text-sm overflow-hidden">
-                <div class="p-4 flex justify-between items-center">
+        <!-- ==================== TAB 5: SALARIES & UNCLAIMED (الرواتب) ==================== -->
+        <section id="tab-salaries" class="tab-content space-y-3.5">
+            <div class="oneui-card p-4 bg-gradient-to-r from-samsung-salary/20 via-samsung-cardDark to-samsung-cardDark border-samsung-salary/30 relative overflow-hidden">
+                <div class="flex justify-between items-start">
                     <div>
-                        <div class="font-bold">اسم التطبيق</div>
-                        <div class="text-xs text-gray-400">تخصيص الاسم المعروض</div>
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-samsung-salary bg-samsung-salary/20 px-2 py-0.5 rounded-full border border-samsung-salary/30">إدارة المستحقات الذكية</span>
+                        <h2 class="text-base font-black text-white mt-1">الرواتب والأجور المتراكمة</h2>
+                        <p class="text-[10px] text-gray-300 mt-0.5">تتبع الرواتب المستحقة وسحبها مباشرة لرصيدك</p>
                     </div>
-                    <input type="text" id="settingAppName" onchange="saveAppSettings()" value="محفظتي الذهبية" class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-2.5 py-1 text-xs text-right w-32">
-                </div>
-
-                <div class="p-4 flex justify-between items-center">
-                    <div>
-                        <div class="font-bold">العملة الأساسية</div>
-                        <div class="text-xs text-gray-400">تغيير رمز العملة</div>
-                    </div>
-                    <select id="settingCurrency" onchange="saveAppSettings()" class="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-2.5 py-1 text-xs">
-                        <option value="IQD">دينار عراقي (IQD)</option>
-                        <option value="USD">دولار أمريكي ($)</option>
-                        <option value="SAR">ريال سعودي (SAR)</option>
-                    </select>
-                </div>
-
-                <div class="p-4 flex justify-between items-center">
-                    <div>
-                        <div class="font-bold">الرصيد الافتتاحي للمحفظة</div>
-                        <div class="text-xs text-gray-400">تحديث الأساس المالي الأول</div>
-                    </div>
-                    <button onclick="openSetInitialBalanceModal('wallet')" class="text-xs bg-blue-600 text-white px-3 py-1 rounded-xl">تعديل</button>
-                </div>
-
-                <div class="p-4 flex justify-between items-center">
-                    <div>
-                        <div class="font-bold">الرصيد الافتتاحي للبنك</div>
-                        <div class="text-xs text-gray-400">تحديث أساس البنك المنزلي</div>
-                    </div>
-                    <button onclick="openSetInitialBalanceModal('bank')" class="text-xs bg-blue-600 text-white px-3 py-1 rounded-xl">تعديل</button>
-                </div>
-            </div>
-
-            <!-- Backup & Data Management -->
-            <div class="bg-white dark:bg-samsung-cardDark p-4 rounded-2xl border border-gray-200 dark:border-gray-800 space-y-2">
-                <h3 class="text-xs font-bold text-gray-400 uppercase">إدارة البيانات والنسخ الاحتياطي</h3>
-                <div class="grid grid-cols-2 gap-2 pt-1">
-                    <button onclick="exportBackupJSON()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95">
-                        <i class="fa-solid fa-download"></i> تصدير نسخة JSON
+                    <button onclick="openAddSalarySourceModal()" class="oneui-btn bg-samsung-salary text-white px-3 py-1.5 text-xs shadow-lg shadow-samsung-salary/30">
+                        <i class="fa-solid fa-plus text-[10px]"></i> مصدر جديد
                     </button>
-                    <label class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 text-center">
-                        <i class="fa-solid fa-upload"></i> استعادة نسخة
-                        <input type="file" id="importFileInput" accept=".json" onchange="importBackupJSON(event)" class="hidden">
-                    </label>
                 </div>
-                <button onclick="exportLogsCSV()" class="w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-file-csv"></i> تصدير سجل العمليات (CSV)
-                </button>
-                <button onclick="confirmWipeData()" class="w-full border border-rose-500/30 text-rose-500 py-2 rounded-xl text-xs font-semibold hover:bg-rose-500/10 transition">
-                    مسح جميع البيانات والبدء من جديد
+
+                <div class="mt-4 pt-3 border-t border-samsung-borderDark/80 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-gray-400 font-bold block">مجموع المستحقات غير المستلمة</span>
+                        <span id="salary-tab-total-accrued" class="num-font text-xl font-black text-samsung-salary">0 IQD</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] text-gray-400 font-bold block">عدد المصادر النشطة</span>
+                        <span id="salary-tab-sources-count" class="num-font text-sm font-extrabold text-white">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="salary-sources-container" class="space-y-3"></div>
+        </section>
+
+        <!-- ==================== TAB 6: DEBTS (الديون) ==================== -->
+        <section id="tab-debts" class="tab-content space-y-3.5">
+            <div class="flex justify-between items-center bg-samsung-cardDark p-3 rounded-2xl border border-samsung-borderDark">
+                <div>
+                    <h2 class="text-xs font-extrabold text-white">إدارة الديون والتعهُّدات</h2>
+                    <p class="text-[10px] text-gray-400">متابعة المستحقات لك وللآخرين</p>
+                </div>
+                <button onclick="openAddDebtModal()" class="oneui-btn bg-samsung-accent text-white px-3.5 py-1.5 text-xs shadow-md shadow-samsung-accent/20">
+                    <i class="fa-solid fa-plus text-[10px]"></i> دين جديد
                 </button>
             </div>
+
+            <!-- Debt Summary Hero Grid -->
+            <div class="grid grid-cols-2 gap-2.5">
+                <div class="oneui-card p-3 border-r-4 border-r-emerald-500 bg-emerald-500/10">
+                    <span class="text-[10px] text-emerald-400 font-bold block mb-0.5"><i class="fa-solid fa-hand-holding-hand"></i> ديون أطلبها (طالب)</span>
+                    <p id="debts-receivable-total" class="num-font text-sm font-black text-emerald-400">0 IQD</p>
+                </div>
+                <div class="oneui-card p-3 border-r-4 border-r-rose-500 bg-rose-500/10">
+                    <span class="text-[10px] text-rose-400 font-bold block mb-0.5"><i class="fa-solid fa-hand-holding-dollar"></i> ديون عليّ (مطلوب)</span>
+                    <p id="debts-payable-total" class="num-font text-sm font-black text-rose-400">0 IQD</p>
+                </div>
+            </div>
+
+            <!-- Debt Filter Buttons -->
+            <div class="flex items-center gap-2">
+                <button onclick="filterDebts('ALL')" id="debt-filter-ALL" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-accent text-white">الكل</button>
+                <button onclick="filterDebts('RECEIVABLE')" id="debt-filter-RECEIVABLE" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-cardDark border border-samsung-borderDark text-emerald-400">أطلبها (طالب)</button>
+                <button onclick="filterDebts('PAYABLE')" id="debt-filter-PAYABLE" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-cardDark border border-samsung-borderDark text-rose-400">عليّ (مطلوب)</button>
+            </div>
+
+            <!-- Debt Records Container -->
+            <div id="debts-list-container" class="space-y-2.5"></div>
         </section>
 
     </main>
 
-    <!-- Bottom Navigation Bar (Fixed for One UI / A55 safe area) -->
-    <nav class="fixed bottom-0 left-0 right-0 z-30 bg-white/90 dark:bg-samsung-cardDark/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 safe-bottom">
-        <div class="max-w-md mx-auto flex justify-around items-center py-2 px-1">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item flex flex-col items-center gap-1 text-blue-600 dark:text-blue-400">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[10px] font-bold">الرئيسية</span>
+    <!-- Hidden Template Container for Generating PDF Report -->
+    <div id="pdf-export-template" class="hidden bg-white text-black p-6 font-arabic text-right dir-rtl" style="width: 790px;">
+        <!-- Dynamic content filled via JS for printing PDF -->
+    </div>
+
+    <!-- Fixed Bottom One UI Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-samsung-cardDark/95 backdrop-blur-xl border-t border-samsung-borderDark px-2 py-2 max-w-md mx-auto">
+        <div class="flex justify-around items-center">
+            <button onclick="switchTab('tab-home')" id="nav-tab-home" class="nav-btn active flex flex-col items-center justify-center w-12 py-0.5 text-samsung-accent transition">
+                <i class="fa-solid fa-house text-sm mb-0.5"></i>
+                <span class="text-[8px] font-bold">الرئيسية</span>
             </button>
-            <button onclick="switchTab('income')" id="nav-income" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <i class="fa-solid fa-sack-dollar text-lg"></i>
-                <span class="text-[10px] font-medium">الدخل</span>
+
+            <button onclick="switchTab('tab-expenses')" id="nav-tab-expenses" class="nav-btn flex flex-col items-center justify-center w-12 py-0.5 text-gray-400 transition">
+                <i class="fa-solid fa-utensils text-sm mb-0.5"></i>
+                <span class="text-[8px] font-bold">المصاريف</span>
             </button>
-            <button onclick="switchTab('expenses')" id="nav-expenses" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <i class="fa-solid fa-receipt text-lg"></i>
-                <span class="text-[10px] font-medium">المصروفات</span>
+
+            <button onclick="switchTab('tab-income')" id="nav-tab-income" class="nav-btn flex flex-col items-center justify-center w-12 py-0.5 text-gray-400 transition">
+                <i class="fa-solid fa-wallet text-sm mb-0.5"></i>
+                <span class="text-[8px] font-bold">الدخل</span>
             </button>
-            <button onclick="switchTab('installments')" id="nav-installments" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <i class="fa-solid fa-credit-card text-lg"></i>
-                <span class="text-[10px] font-medium">الأقساط</span>
+
+            <button onclick="switchTab('tab-installments')" id="nav-tab-installments" class="nav-btn flex flex-col items-center justify-center w-12 py-0.5 text-gray-400 transition">
+                <i class="fa-solid fa-clock-rotate-left text-sm mb-0.5"></i>
+                <span class="text-[8px] font-bold">الأقساط</span>
             </button>
-            <button onclick="switchTab('salaries')" id="nav-salaries" class="nav-item flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <i class="fa-solid fa-briefcase text-lg"></i>
-                <span class="text-[10px] font-medium">الرواتب</span>
+
+            <button onclick="switchTab('tab-salaries')" id="nav-tab-salaries" class="nav-btn flex flex-col items-center justify-center w-12 py-0.5 text-gray-400 transition">
+                <i class="fa-solid fa-hand-holding-dollar text-sm mb-0.5"></i>
+                <span class="text-[8px] font-bold">الرواتب</span>
+            </button>
+
+            <button onclick="switchTab('tab-debts')" id="nav-tab-debts" class="nav-btn flex flex-col items-center justify-center w-12 py-0.5 text-gray-400 transition">
+                <i class="fa-solid fa-file-invoice text-sm mb-0.5"></i>
+                <span class="text-[8px] font-bold">الديون</span>
             </button>
         </div>
     </nav>
 
-    <!-- MODALS & BOTTOM SHEETS CONTAINER -->
-
-    <!-- Modal Overlay -->
-    <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity" onclick="closeAllModals()"></div>
-
-    <!-- Generic Bottom Sheet Container -->
-    <div id="bottomSheet" class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-samsung-cardDark rounded-t-3xl p-5 max-w-md mx-auto transform translate-y-full bottom-sheet max-h-[90vh] overflow-y-auto safe-bottom">
-        <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mb-4"></div>
-        <div id="bottomSheetContent">
-            <!-- Dynamic Content Injected Here -->
+    <!-- GLOBAL BOTTOM SHEET MODAL CONTAINER -->
+    <div id="modal-container" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end justify-center hidden transition-opacity duration-200">
+        <div id="modal-content" class="w-full max-w-md bg-samsung-cardDark border-t border-samsung-borderDark rounded-t-3xl p-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl transition-transform transform translate-y-full">
+            <!-- Modal body inserted dynamically -->
         </div>
     </div>
 
-    <!-- Confirmation / Review Modal (Explicit Confirmation Architecture) -->
-    <div id="confirmModal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white dark:bg-samsung-cardDark rounded-3xl p-5 max-w-xs w-full shadow-2xl border border-gray-200 dark:border-gray-800 hidden space-y-4 text-center">
-        <div id="confirmIcon" class="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto text-xl">
-            <i class="fa-solid fa-circle-question"></i>
-        </div>
-        <h3 id="confirmTitle" class="text-base font-bold">تأكيد العملية</h3>
-        <div id="confirmDetails" class="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800/50 p-3 rounded-2xl text-right space-y-1">
-            <!-- Financial Review Summary -->
-        </div>
-        <div class="flex gap-2 pt-2">
-            <button onclick="closeConfirmModal()" class="flex-1 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 py-2.5 rounded-xl text-xs font-bold">إلغاء</button>
-            <button id="confirmExecuteBtn" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl text-xs font-bold shadow-md shadow-blue-600/20">تأكيد وتنفيذ</button>
-        </div>
-    </div>
-
-    <!-- All Transactions Log Modal -->
-    <div id="logsModal" class="fixed inset-x-0 bottom-0 top-12 z-50 bg-white dark:bg-samsung-cardDark rounded-t-3xl p-4 max-w-md mx-auto hidden flex flex-col border-t border-gray-200 dark:border-gray-800">
-        <div class="flex justify-between items-center mb-3">
-            <h3 class="font-bold text-base">سجل جميع العمليات المالية</h3>
-            <button onclick="closeLogsModal()" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="flex gap-2 mb-3 text-xs">
-            <input type="text" id="logSearchInput" onkeyup="renderLogsList()" placeholder="بحث بالوصف أو المصدر..." class="flex-1 bg-gray-100 dark:bg-gray-800 border-none rounded-xl px-3 py-2">
-            <select id="logTypeFilter" onchange="renderLogsList()" class="bg-gray-100 dark:bg-gray-800 border-none rounded-xl px-2 py-2">
-                <option value="all">الكل</option>
-                <option value="INCOME">دخل</option>
-                <option value="EXPENSE">مصروف</option>
-                <option value="TRANSFER">تحويل</option>
-                <option value="INSTALLMENT_PAYMENT">قسط</option>
-                <option value="SALARY_COLLECTION">راتب</option>
-            </select>
-        </div>
-        <div id="fullLogsList" class="flex-1 overflow-y-auto space-y-2 text-xs">
-            <!-- Dynamic Logs -->
-        </div>
-    </div>
-
-    <!-- MAIN JAVASCRIPT ARCHITECTURE -->
+    <!-- JAVASCRIPT APP ENGINE -->
     <script>
-        /**
-         * SINGLE UNIFIED FINANCIAL ENGINE & DATABASE
-         * Built specifically for Samsung Galaxy A55 (1080x2340 AMOLED Display Optimized)
-         */
-
-        // Initial Core State Schema
-        const DEFAULT_STATE = {
-            version: 1.0,
+        const AppState = {
+            db: null,
             settings: {
-                appName: "محفظتي الذهبية",
+                appName: "تطبيقي المالي",
                 currency: "IQD",
-                darkMode: true
+                theme: "dark"
             },
             accounts: {
-                wallet: { name: "المحفظة الشخصية", initialBalance: 0 },
-                bank: { name: "البنك المنزلي", initialBalance: 0 }
+                WALLET: { id: "WALLET", name: "المحفظة الشخصية", balance: 0, initialBalance: 0 },
+                BANK: { id: "BANK", name: "البنك المنزلي", balance: 0, initialBalance: 0 }
             },
             incomes: [],
             expenses: [],
-            expenseCategories: ["طعام ومؤن", "مواصفات ومواصلات", "فواتير وخدمات", "تسوق وملابس", "صحة وعلاج", "مصاريف أخرى"],
             installments: [],
+            installmentPayments: [],
             salarySources: [],
-            logs: [] // Immutable Ledger
+            salaryReceipts: [],
+            debts: [],
+            transactions: [],
+            activeDebtFilter: 'ALL'
         };
 
-        let appData = null;
+        const DB_NAME = "FinApp_A55_DB_v3";
+        const DB_VERSION = 4;
 
-        // Initialize App on DOM Ready
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadData();
-            applyTheme();
-            setupDefaultCategories();
-            renderAll();
-            // Start countdown timer checks
-            setInterval(updateCountdownDisplays, 60000); // Check every minute
-        });
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-        // Local Data Persistence Engine
-        async function loadData() {
-            try {
-                const stored = localStorage.getItem('samsung_a55_finance_db');
-                if (stored) {
-                    appData = JSON.parse(stored);
-                } else {
-                    appData = JSON.parse(JSON.stringify(DEFAULT_STATE));
-                    saveData();
-                }
-            } catch (e) {
-                console.error("Storage error, resetting to clean default state.", e);
-                appData = JSON.parse(JSON.stringify(DEFAULT_STATE));
-            }
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains("settings")) db.createObjectStore("settings", { keyPath: "key" });
+                    if (!db.objectStoreNames.contains("accounts")) db.createObjectStore("accounts", { keyPath: "id" });
+                    if (!db.objectStoreNames.contains("incomes")) db.createObjectStore("incomes", { keyPath: "id" });
+                    if (!db.objectStoreNames.contains("expenses")) db.createObjectStore("expenses", { keyPath: "id" });
+                    if (!db.objectStoreNames.contains("installments")) db.createObjectStore("installments", { keyPath: "id" });
+                    if (!db.objectStoreNames.contains("installmentPayments")) db.createObjectStore("installmentPayments", { keyPath: "id" });
+                    if (!db.objectStoreNames.contains("salarySources")) db.createObjectStore("salarySources", { keyPath: "id" });
+                    if (!db.objectStoreNames.contains("salaryReceipts")) db.createObjectStore("salaryReceipts", { keyPath: "id" });
+                    if (!db.objectStoreNames.contains("debts")) db.createObjectStore("debts", { keyPath: "id" });
+                    if (!db.objectStoreNames.contains("transactions")) db.createObjectStore("transactions", { keyPath: "id" });
+                };
+
+                request.onsuccess = (e) => {
+                    AppState.db = e.target.result;
+                    resolve(AppState.db);
+                };
+
+                request.onerror = (e) => {
+                    console.error("Database Error:", e.target.error);
+                    reject(e.target.error);
+                };
+            });
         }
 
-        function saveData() {
-            try {
-                localStorage.setItem('samsung_a55_finance_db', JSON.stringify(appData));
-            } catch (e) {
-                alert("حدث خطأ أثناء حفظ البيانات محلية.");
-            }
-        }
-
-        // --- ACCOUNTING CORE ENGINE ---
-        // Calculates actual cash flow dynamically without duplicate compounding
-        function calculateBalances() {
-            let walletCurrent = appData.accounts.wallet.initialBalance;
-            let bankCurrent = appData.accounts.bank.initialBalance;
-
-            let monthIncome = 0;
-            let monthExpense = 0;
-            const currentMonthStr = new Date().toISOString().substring(0, 7);
-
-            appData.logs.forEach(log => {
-                const isThisMonth = log.date && log.date.startsWith(currentMonthStr);
-
-                if (log.type === 'INCOME') {
-                    if (log.account === 'wallet') walletCurrent += log.amount;
-                    if (log.account === 'bank') bankCurrent += log.amount;
-                    if (isThisMonth) monthIncome += log.amount;
-                } 
-                else if (log.type === 'EXPENSE') {
-                    if (log.account === 'wallet') walletCurrent -= log.amount;
-                    if (log.account === 'bank') bankCurrent -= log.amount;
-                    if (isThisMonth) monthExpense += log.amount;
-                }
-                else if (log.type === 'TRANSFER') {
-                    if (log.fromAccount === 'wallet') walletCurrent -= log.amount;
-                    if (log.fromAccount === 'bank') bankCurrent -= log.amount;
-                    if (log.toAccount === 'wallet') walletCurrent += log.amount;
-                    if (log.toAccount === 'bank') bankCurrent += log.amount;
-                }
-                else if (log.type === 'INSTALLMENT_PAYMENT') {
-                    if (log.account === 'wallet') walletCurrent -= log.amount;
-                    if (log.account === 'bank') bankCurrent -= log.amount;
-                }
-                else if (log.type === 'SALARY_COLLECTION') {
-                    if (log.account === 'wallet') walletCurrent += log.amount;
-                    if (log.account === 'bank') bankCurrent += log.amount;
-                    if (isThisMonth) monthIncome += log.amount;
-                }
+        async function loadAllData() {
+            if (!AppState.db) return;
+            
+            const getAll = (storeName) => new Promise((res) => {
+                const tx = AppState.db.transaction(storeName, "readonly");
+                const req = tx.objectStore(storeName).getAll();
+                req.onsuccess = () => res(req.result || []);
             });
 
-            return {
-                wallet: walletCurrent,
-                bank: bankCurrent,
-                totalActual: walletCurrent + bankCurrent,
-                monthIncome,
-                monthExpense
-            };
-        }
-
-        // Helper: Format Currency using Western English Numerals (en-US)
-        function formatMoney(amount) {
-            const num = Number(amount) || 0;
-            return num.toLocaleString('en-US') + ' ' + (appData.settings.currency === 'IQD' ? 'IQD' : appData.settings.currency);
-        }
-
-        // --- NAVIGATION & TABS ---
-        function switchTab(tabId) {
-            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-
-            document.querySelectorAll('.nav-item').forEach(btn => {
-                btn.classList.remove('text-blue-600', 'dark:text-blue-400');
-                btn.classList.add('text-gray-400');
-            });
-
-            const activeNav = document.getElementById(`nav-${tabId}`);
-            if (activeNav) {
-                activeNav.classList.remove('text-gray-400');
-                activeNav.classList.add('text-blue-600', 'dark:text-blue-400');
+            const accountsList = await getAll("accounts");
+            if (accountsList.length > 0) {
+                accountsList.forEach(acc => AppState.accounts[acc.id] = acc);
+            } else {
+                await saveToDB("accounts", AppState.accounts.WALLET);
+                await saveToDB("accounts", AppState.accounts.BANK);
             }
 
-            renderAll();
+            AppState.incomes = await getAll("incomes");
+            AppState.expenses = await getAll("expenses");
+            AppState.installments = await getAll("installments");
+            AppState.installmentPayments = await getAll("installmentPayments");
+            AppState.salarySources = await getAll("salarySources");
+            AppState.salaryReceipts = await getAll("salaryReceipts");
+            AppState.debts = await getAll("debts");
+            AppState.transactions = await getAll("transactions");
+
+            const settingsList = await getAll("settings");
+            settingsList.forEach(s => AppState.settings[s.key] = s.value);
+
+            recalculateAllBalances();
+            renderUI();
         }
 
-        // --- RENDER FUNCTIONS ---
-        function renderAll() {
-            const balances = calculateBalances();
+        function saveToDB(storeName, item) {
+            return new Promise((resolve) => {
+                const tx = AppState.db.transaction(storeName, "readwrite");
+                const store = tx.objectStore(storeName);
+                store.put(item);
+                tx.oncomplete = () => resolve(true);
+            });
+        }
 
-            // Update Dashboard Highlights
-            document.getElementById('dashTotalActual').innerHTML = `${balances.totalActual.toLocaleString('en-US')} <span class="text-xs font-normal">${appData.settings.currency === 'IQD' ? 'IQD' : appData.settings.currency}</span>`;
-            document.getElementById('dashWalletBalance').innerText = formatMoney(balances.wallet);
-            document.getElementById('dashBankBalance').innerText = formatMoney(balances.bank);
-            document.getElementById('dashMonthIncome').innerText = formatMoney(balances.monthIncome);
-            document.getElementById('dashMonthExpense').innerText = formatMoney(balances.monthExpense);
+        function removeFromDB(storeName, key) {
+            return new Promise((resolve) => {
+                const tx = AppState.db.transaction(storeName, "readwrite");
+                const store = tx.objectStore(storeName);
+                store.delete(key);
+                tx.oncomplete = () => resolve(true);
+            });
+        }
 
-            // Calculate Installment totals
-            let totalRemainingInstallments = 0;
-            let nextDue = null;
+        function showToast(message, isError = true) {
+            const toast = document.getElementById('toast-notification');
+            const toastBody = document.getElementById('toast-body');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
 
-            appData.installments.forEach(inst => {
-                if (inst.status !== 'COMPLETED' && inst.status !== 'PAUSED') {
-                    totalRemainingInstallments += inst.remainingAmount;
-                    if (!nextDue || new Date(inst.nextDueDate) < new Date(nextDue.nextDueDate)) {
-                        nextDue = inst;
+            toastMessage.textContent = message;
+
+            if (isError) {
+                toastBody.className = "bg-red-600/95 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl backdrop-blur-md border border-red-400/30 flex items-center gap-2 max-w-sm";
+                toastIcon.className = "fa-solid fa-circle-exclamation text-base text-white";
+            } else {
+                toastBody.className = "bg-emerald-600/95 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl backdrop-blur-md border border-emerald-400/30 flex items-center gap-2 max-w-sm";
+                toastIcon.className = "fa-solid fa-circle-check text-base text-white";
+            }
+
+            toast.classList.remove('opacity-0', '-translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-4');
+            }, 3200);
+        }
+
+        function recalculateAllBalances() {
+            AppState.accounts.WALLET.balance = AppState.accounts.WALLET.initialBalance || 0;
+            AppState.accounts.BANK.balance = AppState.accounts.BANK.initialBalance || 0;
+
+            AppState.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            AppState.transactions.forEach(t => {
+                if (t.type === 'INCOME' || t.type === 'SALARY_RECEIPT' || t.type === 'DEBT_COLLECTION') {
+                    if (AppState.accounts[t.accountId]) {
+                        AppState.accounts[t.accountId].balance += t.amount;
+                    }
+                } else if (t.type === 'EXPENSE' || t.type === 'INSTALLMENT_PAYMENT' || t.type === 'DEBT_PAYMENT') {
+                    if (AppState.accounts[t.accountId]) {
+                        AppState.accounts[t.accountId].balance -= t.amount;
+                    }
+                } else if (t.type === 'TRANSFER') {
+                    if (AppState.accounts[t.fromAccountId]) {
+                        AppState.accounts[t.fromAccountId].balance -= t.amount;
+                    }
+                    if (AppState.accounts[t.toAccountId]) {
+                        AppState.accounts[t.toAccountId].balance += t.amount;
                     }
                 }
             });
-            document.getElementById('dashRemainingInstallments').innerText = formatMoney(totalRemainingInstallments);
 
-            // Render Next Due Card
-            const nextDueContainer = document.getElementById('dashNextDueContainer');
-            if (nextDue) {
-                const daysDiff = Math.ceil((new Date(nextDue.nextDueDate) - new Date()) / (1000 * 60 * 60 * 24));
-                let statusText = "";
-                if (daysDiff < 0) statusText = `<span class="text-rose-500 font-bold">متأخر منذ <span class="num-financial">${Math.abs(daysDiff)}</span> يوم</span>`;
-                else if (daysDiff === 0) statusText = `<span class="text-amber-500 font-bold">موعد الدفع اليوم</span>`;
-                else statusText = `<span class="text-blue-500 font-bold">متبقي <span class="num-financial">${daysDiff}</span> يوم</span>`;
+            saveToDB("accounts", AppState.accounts.WALLET);
+            saveToDB("accounts", AppState.accounts.BANK);
+        }
 
-                nextDueContainer.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="font-bold text-gray-800 dark:text-gray-100">${nextDue.name}</div>
-                            <div class="text-xs text-gray-400">قيمة الدفعة: <span class="num-financial">${formatMoney(nextDue.installmentAmount)}</span></div>
-                        </div>
-                        <div class="text-left">${statusText}</div>
-                    </div>
-                `;
-            } else {
-                nextDueContainer.innerText = "لا توجد أقساط نشطة قادمة.";
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount || 0);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('text-samsung-accent'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.add('text-gray-400'));
+
+            document.getElementById(tabId).classList.add('active');
+            const navBtn = document.getElementById('nav-' + tabId);
+            if (navBtn) {
+                navBtn.classList.remove('text-gray-400');
+                navBtn.classList.add('text-samsung-accent');
             }
 
-            // Calculate Uncollected Salaries
-            let totalUncollectedSalary = 0;
-            appData.salarySources.forEach(source => {
-                if (source.status === 'ACTIVE') {
-                    totalUncollectedSalary += (source.uncollectedMonths || 0) * source.amount;
-                }
-            });
-            document.getElementById('dashUncollectedSalaries').innerText = formatMoney(totalUncollectedSalary);
-            document.getElementById('salaryTotalUncollected').innerText = formatMoney(totalUncollectedSalary);
+            renderUI();
+        }
 
-            // Render Recent Logs
-            const recentLogsContainer = document.getElementById('dashRecentLogs');
-            const recent = appData.logs.slice(-4).reverse();
+        function renderUI() {
+            renderHomeTab();
+            renderIncomeTab();
+            renderExpensesTab();
+            renderInstallmentsTab();
+            renderSalariesTab();
+            renderDebtsTab();
+        }
+
+        /* ==================== HOME TAB LOGIC ==================== */
+        function renderHomeTab() {
+            const walletBal = AppState.accounts.WALLET.balance;
+            const bankBal = AppState.accounts.BANK.balance;
+            const totalActual = walletBal + bankBal;
+
+            document.getElementById('total-actual-money').textContent = `${formatMoney(totalActual)} ${AppState.settings.currency}`;
+            document.getElementById('home-wallet-balance').textContent = `${formatMoney(walletBal)} ${AppState.settings.currency}`;
+            document.getElementById('home-bank-balance').textContent = `${formatMoney(bankBal)} ${AppState.settings.currency}`;
+
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            const monthlyIncome = AppState.transactions
+                .filter(t => (t.type === 'INCOME' || t.type === 'SALARY_RECEIPT') && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            const monthlyExpense = AppState.transactions
+                .filter(t => (t.type === 'EXPENSE' || t.type === 'INSTALLMENT_PAYMENT') && new Date(t.date).getMonth() === currentMonth && new Date(t.date).getFullYear() === currentYear)
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            const totalInstallmentsRemaining = AppState.installments
+                .filter(i => i.status !== 'COMPLETED')
+                .reduce((sum, i) => sum + (i.totalAmount - (i.paidAmount || 0)), 0);
+
+            const totalAccruedSalaries = AppState.salarySources
+                .filter(s => s.status === 'ACTIVE')
+                .reduce((sum, s) => sum + ((s.accruedPeriods || 0) * s.amount), 0);
+
+            document.getElementById('home-monthly-income').textContent = `${formatMoney(monthlyIncome)} ${AppState.settings.currency}`;
+            document.getElementById('home-monthly-expense').textContent = `${formatMoney(monthlyExpense)} ${AppState.settings.currency}`;
+            document.getElementById('home-total-installments-remaining').textContent = `${formatMoney(totalInstallmentsRemaining)} ${AppState.settings.currency}`;
+            document.getElementById('home-unclaimed-salaries').textContent = `${formatMoney(totalAccruedSalaries)} ${AppState.settings.currency}`;
+
+            // Recent Transactions List
+            const recentList = document.getElementById('home-recent-transactions-list');
+            const recent = [...AppState.transactions].reverse().slice(0, 5);
+
             if (recent.length === 0) {
-                recentLogsContainer.innerHTML = `<div class="py-2 text-center text-gray-400">لا توجد عمليات مسجلة بعد.</div>`;
+                recentList.innerHTML = `<p class="text-[10px] text-gray-500 text-center py-2">لا توجد عمليات مسجلة حديثاً</p>`;
             } else {
-                recentLogsContainer.innerHTML = recent.map(log => `
-                    <div class="flex justify-between items-center py-1.5">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full ${log.type === 'INCOME' || log.type === 'SALARY_COLLECTION' ? 'bg-emerald-500' : (log.type === 'EXPENSE' || log.type === 'INSTALLMENT_PAYMENT' ? 'bg-rose-500' : 'bg-indigo-500')}"></span>
-                            <div>
-                                <div class="font-medium text-gray-800 dark:text-gray-200">${log.description}</div>
-                                <div class="text-[10px] text-gray-400"><span class="num-financial">${log.date}</span> • ${log.account === 'wallet' ? 'المحفظة' : 'البنك'}</div>
-                            </div>
+                recentList.innerHTML = recent.map(t => getTransactionHTMLItem(t)).join('');
+            }
+        }
+
+        function getTransactionHTMLItem(t) {
+            let icon = 'fa-receipt';
+            let color = 'text-gray-400';
+            let prefix = '';
+
+            if (t.type === 'INCOME' || t.type === 'DEBT_COLLECTION') { icon = 'fa-arrow-down-left'; color = 'text-samsung-income'; prefix = '+'; }
+            else if (t.type === 'EXPENSE' || t.type === 'DEBT_PAYMENT') { 
+                icon = 'fa-arrow-up-right'; 
+                color = 'text-samsung-expense'; 
+                prefix = '-'; 
+            }
+            else if (t.type === 'TRANSFER') { icon = 'fa-arrows-rotate'; color = 'text-samsung-accent'; prefix = ''; }
+            else if (t.type === 'INSTALLMENT_PAYMENT') { icon = 'fa-clock-rotate-left'; color = 'text-samsung-installment'; prefix = '-'; }
+            else if (t.type === 'SALARY_RECEIPT') { icon = 'fa-hand-holding-dollar'; color = 'text-samsung-salary'; prefix = '+'; }
+
+            const accName = t.accountId ? (AppState.accounts[t.accountId]?.name || '') : '';
+
+            return `
+                <div class="flex items-center justify-between p-2.5 rounded-2xl bg-samsung-bgDark/60 border border-samsung-borderDark/60">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-samsung-cardDark flex items-center justify-center ${color} text-xs border border-samsung-borderDark">
+                            <i class="fa-solid ${icon}"></i>
                         </div>
-                        <div class="font-bold num-financial ${log.type === 'INCOME' || log.type === 'SALARY_COLLECTION' ? 'text-emerald-600' : (log.type === 'EXPENSE' || log.type === 'INSTALLMENT_PAYMENT' ? 'text-rose-600' : 'text-indigo-600')}">
-                            ${log.type === 'INCOME' || log.type === 'SALARY_COLLECTION' ? '+' : '-'}${formatMoney(log.amount)}
+                        <div>
+                            <p class="text-[11px] font-bold text-white leading-tight">${t.description || t.type}</p>
+                            <p class="text-[9px] text-gray-400"><span class="num-font">${formatDate(t.date)}</span> ${accName ? '• ' + accName : ''}</p>
                         </div>
                     </div>
-                `).join('');
-            }
-
-            // Tab-specific Renders
-            renderIncomes();
-            renderExpenses();
-            renderInstallments();
-            renderSalaries();
-            renderChart();
+                    <span class="num-font text-xs font-bold ${color}">${prefix}${formatMoney(t.amount)} ${AppState.settings.currency}</span>
+                </div>
+            `;
         }
 
-        // --- INCOME FUNCTIONS ---
-        let currentIncomeFilter = 'all';
-        function filterIncomeByAccount(acc) {
-            currentIncomeFilter = acc;
-            ['all', 'wallet', 'bank'].forEach(a => {
-                const btn = document.getElementById(`incFilter-${a}`);
-                if (a === acc) {
-                    btn.className = "flex-1 py-1.5 rounded-xl bg-white dark:bg-samsung-cardDark shadow-sm font-bold text-center";
-                } else {
-                    btn.className = "flex-1 py-1.5 rounded-xl text-center text-gray-500";
-                }
-            });
-            renderIncomes();
+        /* ==================== MODALS LOGIC ==================== */
+        function showModal(htmlContent) {
+            const container = document.getElementById('modal-container');
+            const content = document.getElementById('modal-content');
+            content.innerHTML = htmlContent;
+
+            container.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('translate-y-full');
+            }, 10);
         }
 
-        function renderIncomes() {
-            const container = document.getElementById('incomeList');
-            let list = appData.incomes;
-            if (currentIncomeFilter !== 'all') {
-                list = list.filter(i => i.account === currentIncomeFilter);
-            }
+        function closeModal() {
+            const container = document.getElementById('modal-container');
+            const content = document.getElementById('modal-content');
+            content.classList.add('translate-y-full');
+            setTimeout(() => {
+                container.classList.add('hidden');
+            }, 200);
+        }
 
-            if (list.length === 0) {
-                container.innerHTML = `<div class="bg-white dark:bg-samsung-cardDark p-6 rounded-2xl text-center text-gray-400 text-xs">لا يوجد دخل مسجل في هذه الفئة.</div>`;
+        function openSetInitialBalancesModal() {
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-pen-to-square text-samsung-accent"></i> ضبط الأرصدة الأولية للأموال</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
+                    </div>
+
+                    <form onsubmit="handleSaveInitialBalances(event)" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">الرصيد الأولي للمحفظة الشخصية</label>
+                            <input type="number" id="init-wallet" required min="0" value="${AppState.accounts.WALLET.initialBalance || 0}" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">الرصيد الأولي للبنك المنزلي</label>
+                            <input type="number" id="init-bank" required min="0" value="${AppState.accounts.BANK.initialBalance || 0}" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-accent text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-accent/20">
+                            حفظ الأرصدة
+                        </button>
+                    </form>
+                </div>
+            `);
+        }
+
+        async function handleSaveInitialBalances(e) {
+            e.preventDefault();
+            const wInit = parseFloat(document.getElementById('init-wallet').value) || 0;
+            const bInit = parseFloat(document.getElementById('init-bank').value) || 0;
+
+            AppState.accounts.WALLET.initialBalance = wInit;
+            AppState.accounts.BANK.initialBalance = bInit;
+
+            await saveToDB("accounts", AppState.accounts.WALLET);
+            await saveToDB("accounts", AppState.accounts.BANK);
+
+            recalculateAllBalances();
+            closeModal();
+            renderUI();
+            showToast("تم تحديث الأرصدة الأولية بنجاح!", false);
+        }
+
+        function openTransferModal() {
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-arrows-rotate text-samsung-accent"></i> تحويل مالي داخلي</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
+                    </div>
+
+                    <form onsubmit="handleExecuteTransfer(event)" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">من حساب (المصدر)</label>
+                            <select id="transfer-from" onchange="updateTransferToOptions()" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="WALLET">المحفظة الشخصية (المتاح: ${formatMoney(AppState.accounts.WALLET.balance)} IQD)</option>
+                                <option value="BANK">البنك المنزلي (المتاح: ${formatMoney(AppState.accounts.BANK.balance)} IQD)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">إلى حساب (المستلم)</label>
+                            <select id="transfer-to" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="BANK">البنك المنزلي</option>
+                                <option value="WALLET">المحفظة الشخصية</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">مبلغ التحويل</label>
+                            <input type="number" id="transfer-amount" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="أدخل المبلغ">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">ملاحظات / سبب التحويل</label>
+                            <input type="text" id="transfer-desc" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="اختياري">
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-accent text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-accent/20">
+                            تأكيد تحويل المبلغ
+                        </button>
+                    </form>
+                </div>
+            `);
+            updateTransferToOptions();
+        }
+
+        function updateTransferToOptions() {
+            const from = document.getElementById('transfer-from').value;
+            const toSelect = document.getElementById('transfer-to');
+            toSelect.value = (from === 'WALLET') ? 'BANK' : 'WALLET';
+        }
+
+        async function handleExecuteTransfer(e) {
+            e.preventDefault();
+            const fromId = document.getElementById('transfer-from').value;
+            const toId = document.getElementById('transfer-to').value;
+            const amount = parseFloat(document.getElementById('transfer-amount').value);
+            const desc = document.getElementById('transfer-desc').value || 'تحويل داخلي';
+
+            if (fromId === toId) {
+                showToast("لا يمكن التحويل لنفس الحساب!");
                 return;
             }
 
-            container.innerHTML = list.slice().reverse().map(item => `
-                <div class="bg-white dark:bg-samsung-cardDark p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800 flex justify-between items-center shadow-sm">
+            if (amount > AppState.accounts[fromId].balance) {
+                showToast(`الرصيد المتاح في ${AppState.accounts[fromId].name} لا يكفي لهذا التحويل!`);
+                return;
+            }
+
+            const transaction = {
+                id: "TX_" + Date.now(),
+                type: 'TRANSFER',
+                amount,
+                fromAccountId: fromId,
+                toAccountId: toId,
+                description: `${desc} (${AppState.accounts[fromId].name} ➔ ${AppState.accounts[toId].name})`,
+                date: new Date().toISOString()
+            };
+
+            await saveToDB("transactions", transaction);
+            AppState.transactions.push(transaction);
+
+            recalculateAllBalances();
+            closeModal();
+            renderUI();
+            showToast("تم التحويل المالي الداخلي بنجاح!", false);
+        }
+
+        /* ==================== INCOME TAB LOGIC ==================== */
+        function renderIncomeTab() {
+            const container = document.getElementById('incomes-list-container');
+            if (AppState.incomes.length === 0) {
+                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد مصادر دخل مسجلة. اضغط زر إضافة دخل.</div>`;
+                return;
+            }
+
+            container.innerHTML = [...AppState.incomes].reverse().map(inc => `
+                <div class="oneui-card p-3.5 flex justify-between items-center border-r-4 border-r-samsung-income">
                     <div>
-                        <div class="font-bold text-sm text-gray-800 dark:text-gray-100">${item.source}</div>
-                        <div class="text-xs text-gray-400"><span class="num-financial">${item.date}</span> • <span class="text-emerald-500">${item.account === 'wallet' ? 'المحفظة' : 'البنك'}</span> • ${item.category || 'عام'}</div>
-                        ${item.notes ? `<div class="text-[10px] text-gray-400 mt-0.5">${item.notes}</div>` : ''}
+                        <h3 class="text-xs font-bold text-white">${inc.source}</h3>
+                        <p class="text-[10px] text-gray-400"><span class="num-font">${formatDate(inc.date)}</span> • ${AppState.accounts[inc.accountId]?.name || ''}</p>
+                        ${inc.notes ? `<p class="text-[9px] text-gray-500 mt-0.5">${inc.notes}</p>` : ''}
                     </div>
-                    <div class="text-right">
-                        <div class="font-black text-emerald-600 dark:text-emerald-400 text-sm num-financial">+${formatMoney(item.amount)}</div>
-                        <button onclick="deleteIncome('${item.id}')" class="text-rose-500 text-[10px] hover:underline mt-1">حذف</button>
+                    <div class="text-left">
+                        <span class="num-font text-sm font-black text-samsung-income block">+${formatMoney(inc.amount)} ${AppState.settings.currency}</span>
+                        <button onclick="deleteIncome('${inc.id}')" class="text-[9px] text-gray-500 hover:text-red-400 font-bold mt-1">
+                            <i class="fa-solid fa-trash-can"></i> حذف
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
 
         function openAddIncomeModal() {
-            openBottomSheet(`
-                <h3 class="font-bold text-base mb-3">تسجيل دخل جديد</h3>
-                <form onsubmit="handleIncomeSubmit(event)" class="space-y-3 text-xs">
-                    <div>
-                        <label class="block text-gray-400 mb-1">مبلغ الدخل</label>
-                        <input type="number" id="incAmount" required min="1" placeholder="مثال: 500000" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold text-base num-financial">
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-plus text-samsung-income"></i> تسجيل دخل جديد</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
                     </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">مصدر الدخل</label>
-                        <input type="text" id="incSource" required placeholder="مثال: مكافأة عمل، بيع غرض" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">الحساب المستقبل</label>
-                        <select id="incAccount" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                            <option value="wallet">المحفظة الشخصية</option>
-                            <option value="bank">البنك المنزلي</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">تاريخ الاستلام</label>
-                        <input type="date" id="incDate" value="${new Date().toISOString().substring(0,10)}" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 num-financial">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">ملاحظات إضافية</label>
-                        <input type="text" id="incNotes" placeholder="اختياري" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                    </div>
-                    <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-95 transition">حفظ وتسجيل الدخل</button>
-                </form>
+
+                    <form onsubmit="handleSaveIncome(event)" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">مبلغ الدخل</label>
+                            <input type="number" id="income-amount" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="أدخل المبلغ">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">مصدر الدخل</label>
+                            <input type="text" id="income-source" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="مثال: عمل حُر / إيجار / مكافأة">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">إيداع في حساب</label>
+                            <select id="income-account" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="WALLET">المحفظة الشخصية</option>
+                                <option value="BANK">البنك المنزلي</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">تاريخ الاستلام</label>
+                            <input type="date" id="income-date" required class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" value="${new Date().toISOString().split('T')[0]}">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">ملاحظات / وصف</label>
+                            <input type="text" id="income-notes" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="اختياري">
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-income text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-income/20">
+                            تأكيد وإيداع الدخل
+                        </button>
+                    </form>
+                </div>
             `);
         }
 
-        function handleIncomeSubmit(e) {
+        async function handleSaveIncome(e) {
             e.preventDefault();
-            const amount = parseFloat(document.getElementById('incAmount').value);
-            const source = document.getElementById('incSource').value;
-            const account = document.getElementById('incAccount').value;
-            const date = document.getElementById('incDate').value;
-            const notes = document.getElementById('incNotes').value;
+            const amount = parseFloat(document.getElementById('income-amount').value);
+            const source = document.getElementById('income-source').value;
+            const accountId = document.getElementById('income-account').value;
+            const date = document.getElementById('income-date').value;
+            const notes = document.getElementById('income-notes').value || '';
 
-            const balances = calculateBalances();
-            const currentAccBal = account === 'wallet' ? balances.wallet : balances.bank;
+            const id = "INC_" + Date.now();
+            const newIncome = { id, amount, source, accountId, date, notes };
 
-            // Confirm Financial Change explicitly
-            openConfirmModal(
-                "تأكيد تسجيل الدخل",
-                `
-                <div>المبلغ: <b class="num-financial">${formatMoney(amount)}</b></div>
-                <div>الحساب: <b>${account === 'wallet' ? 'المحفظة الشخصية' : 'البنك المنزلي'}</b></div>
-                <div>الرصيد الحالي: <span class="num-financial">${formatMoney(currentAccBal)}</span></div>
-                <div>الرصيد بعد الإضافة: <b class="text-emerald-500 num-financial">${formatMoney(currentAccBal + amount)}</b></div>
-                `,
-                () => {
-                    const newIncome = { id: 'inc_' + Date.now(), amount, source, account, date, notes };
-                    appData.incomes.push(newIncome);
+            const transaction = {
+                id: "TX_" + Date.now(),
+                type: 'INCOME',
+                amount,
+                accountId,
+                description: `دخل: ${source}`,
+                date,
+                referenceId: id
+            };
 
-                    // Add to Immutable Ledger Log
-                    appData.logs.push({
-                        id: 'log_' + Date.now(),
-                        type: 'INCOME',
-                        amount,
-                        account,
-                        description: `دخل من: ${source}`,
-                        date: date || new Date().toISOString().substring(0,10),
-                        refId: newIncome.id
-                    });
+            await saveToDB("incomes", newIncome);
+            await saveToDB("transactions", transaction);
 
-                    saveData();
-                    closeAllModals();
-                    renderAll();
-                }
-            );
+            AppState.incomes.push(newIncome);
+            AppState.transactions.push(transaction);
+
+            recalculateAllBalances();
+            closeModal();
+            renderUI();
+            showToast("تم تسجيل الدخل وإيداعه بنجاح!", false);
         }
 
-        function deleteIncome(id) {
-            openConfirmModal(
-                "حذف عملية دخل",
-                "هل أنت أصلًا متأكد من حذف هذه العملية؟ سيتغير الرصيد محاسبياً.",
-                () => {
-                    appData.incomes = appData.incomes.filter(i => i.id !== id);
-                    appData.logs = appData.logs.filter(l => l.refId !== id);
-                    saveData();
-                    closeConfirmModal();
-                    renderAll();
-                }
-            );
+        async function deleteIncome(id) {
+            AppState.incomes = AppState.incomes.filter(i => i.id !== id);
+            AppState.transactions = AppState.transactions.filter(t => t.referenceId !== id);
+
+            await removeFromDB("incomes", id);
+            
+            recalculateAllBalances();
+            renderUI();
+            showToast("تم حذف سجل الدخل والتراجع عنه بنجاح");
         }
 
-        // --- TRANSFER BETWEEN ACCOUNTS ---
-        function openTransferModal() {
-            const balances = calculateBalances();
-            openBottomSheet(`
-                <h3 class="font-bold text-base mb-3">تحويل داخلي بين الحسابات</h3>
-                <form onsubmit="handleTransferSubmit(event)" class="space-y-3 text-xs">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-gray-400 mb-1">من حساب</label>
-                            <select id="transFrom" onchange="updateTransferLimits()" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-2.5">
-                                <option value="wallet">المحفظة (${formatMoney(balances.wallet)})</option>
-                                <option value="bank">البنك (${formatMoney(balances.bank)})</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-gray-400 mb-1">إلى حساب</label>
-                            <select id="transTo" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-2.5">
-                                <option value="bank">البنك المنزلي</option>
-                                <option value="wallet">المحفظة الشخصية</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">المبلغ المراد تحويله</label>
-                        <input type="number" id="transAmount" required min="1" placeholder="مثال: 100000" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold text-base num-financial">
-                    </div>
-                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-indigo-600/20 active:scale-95 transition">تأكيد التحويل</button>
-                </form>
-            `);
-        }
-
-        function handleTransferSubmit(e) {
-            e.preventDefault();
-            const fromAccount = document.getElementById('transFrom').value;
-            const toAccount = document.getElementById('transTo').value;
-            const amount = parseFloat(document.getElementById('transAmount').value);
-
-            if (fromAccount === toAccount) {
-                alert("يرجى اختيار حسابين مختلفين للتحويل.");
-                return;
-            }
-
-            const balances = calculateBalances();
-            const sourceBalance = fromAccount === 'wallet' ? balances.wallet : balances.bank;
-
-            if (amount > sourceBalance) {
-                alert("الرصيد غير كافٍ في الحساب المصدر لإتمام هذا التحويل.");
-                return;
-            }
-
-            openConfirmModal(
-                "تأكيد تحويل أموال",
-                `
-                <div>مبلغ التحويل: <b class="num-financial">${formatMoney(amount)}</b></div>
-                <div>من: ${fromAccount === 'wallet' ? 'المحفظة' : 'البنك'}</div>
-                <div>إلى: ${toAccount === 'wallet' ? 'المحفظة' : 'البنك'}</div>
-                `,
-                () => {
-                    appData.logs.push({
-                        id: 'log_' + Date.now(),
-                        type: 'TRANSFER',
-                        amount,
-                        fromAccount,
-                        toAccount,
-                        description: `تحويل داخلي إلى ${toAccount === 'wallet' ? 'المحفظة' : 'البنك'}`,
-                        date: new Date().toISOString().substring(0,10)
-                    });
-                    saveData();
-                    closeAllModals();
-                    renderAll();
-                }
-            );
-        }
-
-        // --- EXPENSES FUNCTIONS ---
-        function setupDefaultCategories() {
-            const select = document.getElementById('expenseCategoryFilter');
-            if (select) {
-                select.innerHTML = `<option value="all">كل التصنيفات</option>` +
-                    appData.expenseCategories.map(c => `<option value="${c}">${c}</option>`).join('');
-            }
-        }
-
-        function renderExpenses() {
-            const container = document.getElementById('expenseList');
-            const monthVal = document.getElementById('expenseMonthFilter').value;
-            const catVal = document.getElementById('expenseCategoryFilter').value;
-
-            let list = appData.expenses;
-            if (monthVal) {
-                list = list.filter(e => e.date.startsWith(monthVal));
-            }
-            if (catVal && catVal !== 'all') {
-                list = list.filter(e => e.category === catVal);
-            }
+        /* ==================== EXPENSES TAB LOGIC ==================== */
+        function renderExpensesTab() {
+            const container = document.getElementById('expenses-list-container');
+            const list = AppState.expenses;
 
             if (list.length === 0) {
-                container.innerHTML = `<div class="bg-white dark:bg-samsung-cardDark p-6 rounded-2xl text-center text-gray-400 text-xs">لا يوجد مصروفات مطابقة للفلتر.</div>`;
+                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد مصاريف مسجلة. اضغط زر مصروف جديد.</div>`;
                 return;
             }
 
-            container.innerHTML = list.slice().reverse().map(item => `
-                <div class="bg-white dark:bg-samsung-cardDark p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800 flex justify-between items-center shadow-sm">
-                    <div>
-                        <div class="font-bold text-sm text-gray-800 dark:text-gray-100">${item.title}</div>
-                        <div class="text-xs text-gray-400"><span class="num-financial">${item.date}</span> • <span class="text-rose-500">${item.account === 'wallet' ? 'المحفظة' : 'البنك'}</span> • ${item.category}</div>
+            container.innerHTML = [...list].reverse().map(exp => {
+                return `
+                    <div class="oneui-card p-3.5 flex justify-between items-center border-r-4 border-r-samsung-expense">
+                        <div>
+                            <h3 class="text-xs font-bold text-white">${exp.title}</h3>
+                            <p class="text-[10px] text-gray-400 mt-0.5"><span class="num-font">${formatDate(exp.date)}</span></p>
+                        </div>
+                        <div class="text-left">
+                            <span class="num-font text-sm font-black text-samsung-expense block">-${formatMoney(exp.amount)} ${AppState.settings.currency}</span>
+                            <button onclick="deleteExpense('${exp.id}')" class="text-[9px] text-gray-500 hover:text-red-400 font-bold mt-1">
+                                <i class="fa-solid fa-trash-can"></i> حذف
+                            </button>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <div class="font-black text-rose-600 dark:text-rose-400 text-sm num-financial">-${formatMoney(item.amount)}</div>
-                        <button onclick="deleteExpense('${item.id}')" class="text-rose-500 text-[10px] hover:underline mt-1">حذف</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function openAddExpenseModal() {
-            openBottomSheet(`
-                <h3 class="font-bold text-base mb-3">تسجيل مصروف جديد</h3>
-                <form onsubmit="handleExpenseSubmit(event)" class="space-y-3 text-xs">
-                    <div>
-                        <label class="block text-gray-400 mb-1">مبلغ المصروف</label>
-                        <input type="number" id="expAmount" required min="1" placeholder="مثال: 25000" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold text-base num-financial">
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-plus text-samsung-expense"></i> تسجيل مصروف جديد</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
                     </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">اسم المصروف</label>
-                        <input type="text" id="expTitle" required placeholder="مثال: تسوق مواد غذائية" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">التصنيف</label>
-                        <select id="expCategory" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                            ${appData.expenseCategories.map(c => `<option value="${c}">${c}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">الدفع من حساب</label>
-                        <select id="expAccount" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                            <option value="wallet">المحفظة الشخصية</option>
-                            <option value="bank">البنك المنزلي</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">تاريخ العملية</label>
-                        <input type="date" id="expDate" value="${new Date().toISOString().substring(0,10)}" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 num-financial">
-                    </div>
-                    <button type="submit" class="w-full bg-rose-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-rose-600/20 active:scale-95 transition">خصم وتسجيل المصروف</button>
-                </form>
+
+                    <form onsubmit="handleSaveExpense(event)" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">المبلغ</label>
+                            <input type="number" id="expense-amount" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="أدخل المبلغ">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">السبب / التفاصيل</label>
+                            <input type="text" id="expense-title" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="سبب الصرف (مثال: طعام، تسوق، وقود)">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">التاريخ</label>
+                            <input type="date" id="expense-date" required class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" value="${new Date().toISOString().split('T')[0]}">
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-expense text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-expense/20">
+                            تأكيد وخصم المصروف
+                        </button>
+                    </form>
+                </div>
             `);
         }
 
-        function handleExpenseSubmit(e) {
+        async function handleSaveExpense(e) {
             e.preventDefault();
-            const amount = parseFloat(document.getElementById('expAmount').value);
-            const title = document.getElementById('expTitle').value;
-            const category = document.getElementById('expCategory').value;
-            const account = document.getElementById('expAccount').value;
-            const date = document.getElementById('expDate').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const title = document.getElementById('expense-title').value;
+            const date = document.getElementById('expense-date').value;
+            const accountId = 'WALLET'; // Default deduction from WALLET
 
-            const balances = calculateBalances();
-            const currentAccBal = account === 'wallet' ? balances.wallet : balances.bank;
-
-            if (amount > currentAccBal) {
-                alert("عذراً، الرصيد المتاح غير كافٍ في هذا الحساب لتأكيد الخصم.");
+            if (amount > AppState.accounts[accountId].balance) {
+                showToast(`الرصيد المتاح في ${AppState.accounts[accountId].name} لا يكفي لهذا المصروف!`);
                 return;
             }
 
-            openConfirmModal(
-                "تأكيد خصم مصروف",
-                `
-                <div>المبلغ: <b class="num-financial">${formatMoney(amount)}</b></div>
-                <div>الحساب المصدر: <b>${account === 'wallet' ? 'المحفظة' : 'البنك'}</b></div>
-                <div>الرصيد قبل الخصم: <span class="num-financial">${formatMoney(currentAccBal)}</span></div>
-                <div>الرصيد المتوقع بعد الخصم: <b class="text-rose-500 num-financial">${formatMoney(currentAccBal - amount)}</b></div>
-                `,
-                () => {
-                    const newExpense = { id: 'exp_' + Date.now(), amount, title, category, account, date };
-                    appData.expenses.push(newExpense);
+            const id = "EXP_" + Date.now();
+            const newExpense = { id, title, amount, accountId, date };
 
-                    appData.logs.push({
-                        id: 'log_' + Date.now(),
-                        type: 'EXPENSE',
-                        amount,
-                        account,
-                        description: `مصروف: ${title}`,
-                        date,
-                        refId: newExpense.id
-                    });
+            const transaction = {
+                id: "TX_" + Date.now(),
+                type: 'EXPENSE',
+                amount,
+                accountId,
+                description: `مصروف: ${title}`,
+                date,
+                referenceId: id
+            };
 
-                    saveData();
-                    closeAllModals();
-                    renderAll();
-                }
-            );
+            await saveToDB("expenses", newExpense);
+            await saveToDB("transactions", transaction);
+
+            AppState.expenses.push(newExpense);
+            AppState.transactions.push(transaction);
+
+            recalculateAllBalances();
+            closeModal();
+            renderUI();
+            showToast("تم الخصم وتسجيل المصروف بنجاح!", false);
         }
 
-        function deleteExpense(id) {
-            openConfirmModal(
-                "إلغاء مصروف",
-                "هل تريد حذف هذا المصروف؟ سيتم استرجاع المبلغ إلى الحساب تلقائياً.",
-                () => {
-                    appData.expenses = appData.expenses.filter(e => e.id !== id);
-                    appData.logs = appData.logs.filter(l => l.refId !== id);
-                    saveData();
-                    closeConfirmModal();
-                    renderAll();
-                }
-            );
+        async function deleteExpense(id) {
+            AppState.expenses = AppState.expenses.filter(e => e.id !== id);
+            AppState.transactions = AppState.transactions.filter(t => t.referenceId !== id);
+
+            await removeFromDB("expenses", id);
+
+            recalculateAllBalances();
+            renderUI();
+            showToast("تم حذف سجل المصروف وإعادة المبلغ لرصيدك");
         }
 
-        // --- INSTALLMENTS ARCHITECTURE ---
-        function renderInstallments() {
-            const container = document.getElementById('installmentList');
-            if (appData.installments.length === 0) {
-                container.innerHTML = `<div class="bg-white dark:bg-samsung-cardDark p-6 rounded-2xl text-center text-gray-400 text-xs">لا توجد أقساط مسجلة حالياً.</div>`;
+        /* ==================== INSTALLMENTS TAB LOGIC ==================== */
+        function renderInstallmentsTab() {
+            const container = document.getElementById('installments-list-container');
+            if (AppState.installments.length === 0) {
+                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد أقساط مسجلة. اضغط زر قسط جديد.</div>`;
                 return;
             }
 
-            container.innerHTML = appData.installments.map(inst => {
-                const percent = Math.min(100, Math.round((inst.paidAmount / inst.totalAmount) * 100));
-                const daysLeft = Math.ceil((new Date(inst.nextDueDate) - new Date()) / (1000 * 60 * 60 * 24));
-
-                let badge = "";
-                if (inst.status === 'COMPLETED') badge = `<span class="bg-emerald-500/20 text-emerald-500 text-[10px] px-2 py-0.5 rounded-full font-bold">مكتمل</span>`;
-                else if (daysLeft < 0) badge = `<span class="bg-rose-500/20 text-rose-500 text-[10px] px-2 py-0.5 rounded-full font-bold">متأخر</span>`;
-                else badge = `<span class="bg-blue-500/20 text-blue-500 text-[10px] px-2 py-0.5 rounded-full font-bold">نشط</span>`;
+            container.innerHTML = [...AppState.installments].reverse().map(inst => {
+                const paid = inst.paidAmount || 0;
+                const remaining = inst.totalAmount - paid;
+                const progress = Math.min(100, Math.round((paid / inst.totalAmount) * 100));
+                const isCompleted = remaining <= 0;
 
                 return `
-                    <div class="bg-white dark:bg-samsung-cardDark p-4 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-3">
+                    <div class="oneui-card p-3.5 border-r-4 ${isCompleted ? 'border-r-emerald-500' : 'border-r-samsung-installment'} space-y-2.5">
                         <div class="flex justify-between items-start">
                             <div>
-                                <div class="font-bold text-sm text-gray-800 dark:text-gray-100">${inst.name}</div>
-                                <div class="text-xs text-gray-400">الجهة: ${inst.creditor}</div>
+                                <h3 class="text-xs font-extrabold text-white">${inst.title}</h3>
+                                <p class="text-[10px] text-gray-400">الجهة: ${inst.beneficiary || 'غير محدد'}</p>
                             </div>
-                            ${badge}
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${isCompleted ? 'bg-emerald-500/20 text-emerald-400' : 'bg-samsung-installment/20 text-samsung-installment'}">
+                                ${isCompleted ? 'مكتمل السداد' : 'قسط نشط'}
+                            </span>
                         </div>
 
                         <!-- Progress Bar -->
                         <div>
-                            <div class="flex justify-between text-[10px] text-gray-400 mb-1">
-                                <span>المدفوع: <span class="num-financial">${formatMoney(inst.paidAmount)}</span></span>
-                                <span>المتبقي: <span class="num-financial">${formatMoney(inst.remainingAmount)}</span></span>
+                            <div class="flex justify-between text-[9px] font-bold text-gray-400 mb-1">
+                                <span>المدفوع: <strong class="num-font text-white">${formatMoney(paid)}</strong></span>
+                                <span>المتبقي: <strong class="num-font text-samsung-installment">${formatMoney(remaining)} ${AppState.settings.currency}</strong></span>
                             </div>
-                            <div class="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-purple-600 rounded-full" style="width: ${percent}%"></div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2 text-xs bg-gray-50 dark:bg-gray-800/40 p-2.5 rounded-2xl">
-                            <div>
-                                <span class="text-gray-400 text-[10px] block">الدفعة القادمة</span>
-                                <span class="font-bold text-purple-600 dark:text-purple-400 num-financial">${formatMoney(inst.installmentAmount)}</span>
-                            </div>
-                            <div>
-                                <span class="text-gray-400 text-[10px] block">تاريخ الاستحقاق</span>
-                                <span class="font-bold num-financial">${inst.nextDueDate}</span>
+                            <div class="w-full bg-samsung-bgDark rounded-full h-2 overflow-hidden border border-samsung-borderDark">
+                                <div class="bg-gradient-to-r from-samsung-installment to-amber-400 h-full rounded-full transition-all duration-300" style="width: ${progress}%"></div>
                             </div>
                         </div>
 
-                        ${inst.status !== 'COMPLETED' ? `
-                            <button onclick="payInstallmentModal('${inst.id}')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md shadow-purple-600/20 active:scale-95 transition">
-                                تسديد الدفعة الآن
+                        <div class="flex justify-between items-center text-[10px] text-gray-400 pt-1 border-t border-samsung-borderDark/60">
+                            <span>الدفعة: <strong class="num-font text-white">${formatMoney(inst.paymentAmount)} IQD</strong></span>
+                            ${!isCompleted ? `
+                                <button onclick="openPayInstallmentModal('${inst.id}')" class="oneui-btn bg-samsung-installment text-white px-3 py-1 text-[10px] font-bold shadow-md shadow-samsung-installment/20">
+                                    <i class="fa-solid fa-credit-card"></i> تسديد دفعة
+                                </button>
+                            ` : `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> تم السداد</span>`}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openAddInstallmentModal() {
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-plus text-samsung-installment"></i> إنشاء قسط جديد</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
+                    </div>
+
+                    <form onsubmit="handleSaveInstallment(event)" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">عنوان القسط / الالتزام</label>
+                            <input type="text" id="inst-title" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="مثال: قسط هاتف A55 / قسط السيارة">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">الجهة المستحقة</label>
+                            <input type="text" id="inst-beneficiary" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="اسم الشركة أو الشخص">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-gray-400 font-bold block mb-1">إجمالي الالتزام</label>
+                                <input type="number" id="inst-total" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-gray-400 font-bold block mb-1">قيمة الدفعة الواحدة</label>
+                                <input type="number" id="inst-payment" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-installment text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-installment/20">
+                            حفظ القسط
+                        </button>
+                    </form>
+                </div>
+            `);
+        }
+
+        async function handleSaveInstallment(e) {
+            e.preventDefault();
+            const title = document.getElementById('inst-title').value;
+            const beneficiary = document.getElementById('inst-beneficiary').value || '';
+            const totalAmount = parseFloat(document.getElementById('inst-total').value);
+            const paymentAmount = parseFloat(document.getElementById('inst-payment').value);
+
+            const id = "INST_" + Date.now();
+            const newInst = { id, title, beneficiary, totalAmount, paymentAmount, paidAmount: 0, status: 'ACTIVE' };
+
+            await saveToDB("installments", newInst);
+            AppState.installments.push(newInst);
+
+            closeModal();
+            renderUI();
+            showToast("تم إنشاء القسط بنجاح!", false);
+        }
+
+        function openPayInstallmentModal(instId) {
+            const inst = AppState.installments.find(i => i.id === instId);
+            if (!inst) return;
+
+            const remaining = inst.totalAmount - (inst.paidAmount || 0);
+            const defaultPay = Math.min(remaining, inst.paymentAmount);
+
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-credit-card text-samsung-installment"></i> تسديد دفعة من القسط</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
+                    </div>
+
+                    <div class="bg-samsung-bgDark p-2.5 rounded-xl border border-samsung-borderDark text-[10px] space-y-1">
+                        <p class="text-gray-300">القسط: <strong class="text-white">${inst.title}</strong></p>
+                        <p class="text-gray-300">المتبقي للتسديد: <strong class="num-font text-samsung-installment">${formatMoney(remaining)} IQD</strong></p>
+                    </div>
+
+                    <form onsubmit="handleExecutePayInstallment(event, '${inst.id}')" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">مبلغ الدفعة المراد سداده</label>
+                            <input type="number" id="pay-inst-amount" required min="1" max="${remaining}" value="${defaultPay}" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">خصم الدفعة من حساب</label>
+                            <select id="pay-inst-account" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="WALLET">المحفظة الشخصية (المتاح: ${formatMoney(AppState.accounts.WALLET.balance)} IQD)</option>
+                                <option value="BANK">البنك المنزلي (المتاح: ${formatMoney(AppState.accounts.BANK.balance)} IQD)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-installment text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-installment/20">
+                            تأكيد تسديد الدفعة
+                        </button>
+                    </form>
+                </div>
+            `);
+        }
+
+        async function handleExecutePayInstallment(e, instId) {
+            e.preventDefault();
+            const inst = AppState.installments.find(i => i.id === instId);
+            if (!inst) return;
+
+            const amount = parseFloat(document.getElementById('pay-inst-amount').value);
+            const accountId = document.getElementById('pay-inst-account').value;
+
+            if (amount > AppState.accounts[accountId].balance) {
+                showToast(`الرصيد المتاح في ${AppState.accounts[accountId].name} لا يكفي لسداد هذه الدفعة!`);
+                return;
+            }
+
+            inst.paidAmount = (inst.paidAmount || 0) + amount;
+            if (inst.paidAmount >= inst.totalAmount) {
+                inst.status = 'COMPLETED';
+            }
+
+            const transaction = {
+                id: "TX_" + Date.now(),
+                type: 'INSTALLMENT_PAYMENT',
+                amount,
+                accountId,
+                description: `سداد قسط: ${inst.title}`,
+                date: new Date().toISOString(),
+                referenceId: inst.id
+            };
+
+            await saveToDB("installments", inst);
+            await saveToDB("transactions", transaction);
+
+            AppState.transactions.push(transaction);
+
+            recalculateAllBalances();
+            closeModal();
+            renderUI();
+            showToast("تم تسديد دفعة القسط وخصمها بنجاح!", false);
+        }
+
+        /* ==================== SALARIES TAB LOGIC ==================== */
+        function renderSalariesTab() {
+            const container = document.getElementById('salary-sources-container');
+            
+            const totalAccrued = AppState.salarySources
+                .filter(s => s.status === 'ACTIVE')
+                .reduce((sum, s) => sum + ((s.accruedPeriods || 0) * s.amount), 0);
+
+            document.getElementById('salary-tab-total-accrued').textContent = `${formatMoney(totalAccrued)} ${AppState.settings.currency}`;
+            document.getElementById('salary-tab-sources-count').textContent = AppState.salarySources.length;
+
+            if (AppState.salarySources.length === 0) {
+                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد مصادر رواتب مسجلة. اضغط زر مصدر جديد.</div>`;
+                return;
+            }
+
+            container.innerHTML = [...AppState.salarySources].reverse().map(src => {
+                const accrued = (src.accruedPeriods || 0) * src.amount;
+
+                return `
+                    <div class="oneui-card p-3.5 border-r-4 border-r-samsung-salary space-y-2.5">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xs font-black text-white">${src.name}</h3>
+                                <p class="text-[10px] text-gray-400">النوع: ${src.type === 'MONTHLY' ? 'راتب شهري' : 'أجر يومي'} • الفردي: <span class="num-font text-white">${formatMoney(src.amount)} IQD</span></p>
+                            </div>
+                            <button onclick="deleteSalarySource('${src.id}')" class="text-[9px] text-gray-500 hover:text-red-400">
+                                <i class="fa-solid fa-trash-can"></i> حذف
+                            </button>
+                        </div>
+
+                        <!-- Accrued Amount Card -->
+                        <div class="bg-samsung-bgDark/80 p-2.5 rounded-xl border border-samsung-borderDark flex justify-between items-center">
+                            <div>
+                                <span class="text-[9px] text-gray-400 font-bold block">المستحق المتراكم غير المستلم</span>
+                                <span class="num-font text-sm font-black text-samsung-salary">${formatMoney(accrued)} ${AppState.settings.currency}</span>
+                                <span class="text-[9px] text-gray-500 block">(${src.accruedPeriods || 0} ${src.type === 'MONTHLY' ? 'أشهر' : 'أيام'} متأخرة)</span>
+                            </div>
+
+                            <button onclick="quickAddSalaryAccrual('${src.id}')" class="oneui-btn bg-samsung-salary/20 text-samsung-salary border border-samsung-salary/40 px-2.5 py-1 text-[10px] font-bold">
+                                +1 ${src.type === 'MONTHLY' ? 'شهر' : 'يوم'}
+                            </button>
+                        </div>
+
+                        ${accrued > 0 ? `
+                            <button onclick="openCollectSalaryModal('${src.id}')" class="w-full oneui-btn bg-samsung-salary text-white font-bold py-2 text-xs shadow-md shadow-samsung-salary/20">
+                                <i class="fa-solid fa-hand-holding-dollar text-[10px]"></i> سحب واستلام المستحقات لرصيدك
                             </button>
                         ` : ''}
                     </div>
@@ -1058,479 +1222,541 @@
             }).join('');
         }
 
-        function openAddInstallmentModal() {
-            openBottomSheet(`
-                <h3 class="font-bold text-base mb-3">إنشاء قسط جديد</h3>
-                <form onsubmit="handleInstallmentSubmit(event)" class="space-y-3 text-xs">
-                    <div>
-                        <label class="block text-gray-400 mb-1">اسم القسط / الشيء</label>
-                        <input type="text" id="instName" required placeholder="مثال: قسط الهاتف Galaxy A55" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
+        function openAddSalarySourceModal() {
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-plus text-samsung-salary"></i> إضافة مصدر راتب / أجر جديد</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
                     </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">الجهة المستحقة</label>
-                        <input type="text" id="instCreditor" required placeholder="مثال: معارض الأجهزة" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
+
+                    <form onsubmit="handleSaveSalarySource(event)" class="space-y-2.5 text-xs">
                         <div>
-                            <label class="block text-gray-400 mb-1">إجمالي المبلغ</label>
-                            <input type="number" id="instTotal" required min="1" placeholder="300000" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold num-financial">
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">اسم المصدر / الجهة</label>
+                            <input type="text" id="src-name" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="مثال: الراتب الحكومي / عمل إضافي">
                         </div>
+
                         <div>
-                            <label class="block text-gray-400 mb-1">قيمة الدفعة</label>
-                            <input type="number" id="instPayAmount" required min="1" placeholder="50000" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold num-financial">
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">نوع الراتب</label>
+                            <select id="src-type" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="MONTHLY">شهري</option>
+                                <option value="DAILY">يومي</option>
+                            </select>
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">تاريخ أول دفعة</label>
-                        <input type="date" id="instStartDate" value="${new Date().toISOString().substring(0,10)}" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 num-financial">
-                    </div>
-                    <button type="submit" class="w-full bg-purple-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-purple-600/20 active:scale-95 transition">حفظ وإنشاء الجدول</button>
-                </form>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">قيمة الراتب للـ (شهر/يوم)</label>
+                            <input type="number" id="src-amount" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="أدخل المبلغ">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">عدد (الأشهر/الأيام) المتأخرة غير المستلمة حالياً</label>
+                            <input type="number" id="src-accrued" required min="0" value="0" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-salary text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-salary/20">
+                            حفظ مصدر الراتب
+                        </button>
+                    </form>
+                </div>
             `);
         }
 
-        function handleInstallmentSubmit(e) {
+        async function handleSaveSalarySource(e) {
             e.preventDefault();
-            const name = document.getElementById('instName').value;
-            const creditor = document.getElementById('instCreditor').value;
-            const totalAmount = parseFloat(document.getElementById('instTotal').value);
-            const installmentAmount = parseFloat(document.getElementById('instPayAmount').value);
-            const startDate = document.getElementById('instStartDate').value;
+            const name = document.getElementById('src-name').value;
+            const type = document.getElementById('src-type').value;
+            const amount = parseFloat(document.getElementById('src-amount').value);
+            const accruedPeriods = parseInt(document.getElementById('src-accrued').value) || 0;
 
-            const newInst = {
-                id: 'inst_' + Date.now(),
-                name,
-                creditor,
-                totalAmount,
-                paidAmount: 0,
-                remainingAmount: totalAmount,
-                installmentAmount,
-                nextDueDate: startDate,
-                status: 'ACTIVE'
+            const id = "SAL_" + Date.now();
+            const newSrc = { id, name, type, amount, accruedPeriods, status: 'ACTIVE' };
+
+            await saveToDB("salarySources", newSrc);
+            AppState.salarySources.push(newSrc);
+
+            closeModal();
+            renderUI();
+            showToast("تم حفظ مصدر الراتب بنجاح!", false);
+        }
+
+        async function quickAddSalaryAccrual(sourceId) {
+            const src = AppState.salarySources.find(s => s.id === sourceId);
+            if (!src) return;
+
+            src.accruedPeriods = (src.accruedPeriods || 0) + 1;
+            await saveToDB("salarySources", src);
+
+            renderUI();
+            showToast(`تم إضافة ${src.type === 'MONTHLY' ? 'شهر' : 'يوم'} مستحق لـ (${src.name})`, false);
+        }
+
+        function openCollectSalaryModal(sourceId) {
+            const src = AppState.salarySources.find(s => s.id === sourceId);
+            if (!src) return;
+
+            const totalAccrued = (src.accruedPeriods || 0) * src.amount;
+
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-hand-holding-dollar text-samsung-salary"></i> استلام وسحب المستحقات</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
+                    </div>
+
+                    <div class="bg-samsung-bgDark p-2.5 rounded-xl border border-samsung-borderDark text-[10px] space-y-1">
+                        <p class="text-gray-300">المصدر: <strong class="text-white">${src.name}</strong></p>
+                        <p class="text-gray-300">المبلغ المتراكم: <strong class="num-font text-samsung-salary">${formatMoney(totalAccrued)} IQD</strong></p>
+                    </div>
+
+                    <form onsubmit="handleExecuteCollectSalary(event, '${src.id}')" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">عدد (الأشهر/الأيام) المراد استلامها الآن</label>
+                            <input type="number" id="collect-periods" required min="1" max="${src.accruedPeriods}" value="${src.accruedPeriods}" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">إيداع المبلغ المستلم في حساب</label>
+                            <select id="collect-account" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="WALLET">المحفظة الشخصية</option>
+                                <option value="BANK">البنك المنزلي</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-salary text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-salary/20">
+                            تأكيد الاستلام والإيداع لرصيدك
+                        </button>
+                    </form>
+                </div>
+            `);
+        }
+
+        async function handleExecuteCollectSalary(e, sourceId) {
+            e.preventDefault();
+            const src = AppState.salarySources.find(s => s.id === sourceId);
+            if (!src) return;
+
+            const periodsToCollect = parseInt(document.getElementById('collect-periods').value) || 0;
+            const accountId = document.getElementById('collect-account').value;
+
+            if (periodsToCollect > src.accruedPeriods) {
+                showToast("العدد المحدد أكبر من المستحقات الفعلية!");
+                return;
+            }
+
+            const collectedAmount = periodsToCollect * src.amount;
+            src.accruedPeriods -= periodsToCollect;
+
+            const transaction = {
+                id: "TX_" + Date.now(),
+                type: 'SALARY_RECEIPT',
+                amount: collectedAmount,
+                accountId,
+                description: `استلام راتب: ${src.name} (${periodsToCollect} ${src.type === 'MONTHLY' ? 'أشهر' : 'أيام'})`,
+                date: new Date().toISOString(),
+                referenceId: src.id
             };
 
-            appData.installments.push(newInst);
-            saveData();
-            closeAllModals();
-            renderAll();
+            await saveToDB("salarySources", src);
+            await saveToDB("transactions", transaction);
+
+            AppState.transactions.push(transaction);
+
+            recalculateAllBalances();
+            closeModal();
+            renderUI();
+            showToast("تم استلام المبلغ وإيداعه في رصيدك بنجاح!", false);
         }
 
-        function payInstallmentModal(instId) {
-            const inst = appData.installments.find(i => i.id === instId);
-            if (!inst) return;
-
-            const balances = calculateBalances();
-
-            openBottomSheet(`
-                <h3 class="font-bold text-base mb-3">تسديد دفعة قسط: ${inst.name}</h3>
-                <form onsubmit="handlePayInstallmentSubmit(event, '${inst.id}')" class="space-y-3 text-xs">
-                    <div>
-                        <label class="block text-gray-400 mb-1">المبلغ المراد دفعه الآن</label>
-                        <input type="number" id="payInstVal" value="${Math.min(inst.installmentAmount, inst.remainingAmount)}" max="${inst.remainingAmount}" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold text-base num-financial">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">الخصم من حساب</label>
-                        <select id="payInstAcc" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                            <option value="wallet">المحفظة (${formatMoney(balances.wallet)})</option>
-                            <option value="bank">البنك (${formatMoney(balances.bank)})</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="w-full bg-purple-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-purple-600/20 active:scale-95 transition">تأكيد الخصم والسداد</button>
-                </form>
-            `);
+        async function deleteSalarySource(id) {
+            AppState.salarySources = AppState.salarySources.filter(s => s.id !== id);
+            await removeFromDB("salarySources", id);
+            renderUI();
+            showToast("تم حذف مصدر الراتب بنجاح");
         }
 
-        function handlePayInstallmentSubmit(e, instId) {
-            e.preventDefault();
-            const inst = appData.installments.find(i => i.id === instId);
-            const payVal = parseFloat(document.getElementById('payInstVal').value);
-            const account = document.getElementById('payInstAcc').value;
+        /* ==================== DEBTS TAB LOGIC ==================== */
+        function filterDebts(type) {
+            AppState.activeDebtFilter = type;
+            document.querySelectorAll('.debt-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-samsung-accent', 'text-white');
+                btn.classList.add('bg-samsung-cardDark');
+            });
+            const activeBtn = document.getElementById('debt-filter-' + type);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-samsung-accent', 'text-white');
+                activeBtn.classList.remove('bg-samsung-cardDark');
+            }
+            renderDebtsTab();
+        }
 
-            const balances = calculateBalances();
-            const currentAccBal = account === 'wallet' ? balances.wallet : balances.bank;
+        function renderDebtsTab() {
+            const container = document.getElementById('debts-list-container');
+            
+            const activeDebts = AppState.debts.filter(d => d.status !== 'SETTLED');
+            const totalReceivable = activeDebts.filter(d => d.type === 'RECEIVABLE').reduce((sum, d) => sum + d.amount, 0);
+            const totalPayable = activeDebts.filter(d => d.type === 'PAYABLE').reduce((sum, d) => sum + d.amount, 0);
 
-            if (payVal > currentAccBal) {
-                alert("عذراً، الرصيد غير كافٍ في الحساب المختار لتنفيذ السداد.");
+            document.getElementById('debts-receivable-total').textContent = `${formatMoney(totalReceivable)} ${AppState.settings.currency}`;
+            document.getElementById('debts-payable-total').textContent = `${formatMoney(totalPayable)} ${AppState.settings.currency}`;
+
+            let filtered = AppState.debts;
+            if (AppState.activeDebtFilter !== 'ALL') {
+                filtered = filtered.filter(d => d.type === AppState.activeDebtFilter);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد ديون مسجلة.</div>`;
                 return;
             }
 
-            openConfirmModal(
-                "تأكيد سداد الدفعة",
-                `
-                <div>القسط: <b>${inst.name}</b></div>
-                <div>قيمة الدفعة: <b class="num-financial">${formatMoney(payVal)}</b></div>
-                <div>الحساب الخاسم: <b>${account === 'wallet' ? 'المحفظة' : 'البنك'}</b></div>
-                `,
-                () => {
-                    inst.paidAmount += payVal;
-                    inst.remainingAmount -= payVal;
+            container.innerHTML = [...filtered].reverse().map(debt => {
+                const isReceivable = debt.type === 'RECEIVABLE';
+                const isSettled = debt.status === 'SETTLED';
 
-                    if (inst.remainingAmount <= 0) {
-                        inst.remainingAmount = 0;
-                        inst.status = 'COMPLETED';
-                    } else {
-                        // Calculate next month due date
-                        const d = new Date(inst.nextDueDate);
-                        d.setMonth(d.getMonth() + 1);
-                        inst.nextDueDate = d.toISOString().substring(0,10);
-                    }
-
-                    appData.logs.push({
-                        id: 'log_' + Date.now(),
-                        type: 'INSTALLMENT_PAYMENT',
-                        amount: payVal,
-                        account,
-                        description: `سداد قسط: ${inst.name}`,
-                        date: new Date().toISOString().substring(0,10),
-                        refId: inst.id
-                    });
-
-                    saveData();
-                    closeAllModals();
-                    renderAll();
-                }
-            );
-        }
-
-        // --- SALARIES ARCHITECTURE ---
-        function renderSalaries() {
-            const container = document.getElementById('salarySourceList');
-            if (appData.salarySources.length === 0) {
-                container.innerHTML = `<div class="bg-white dark:bg-samsung-cardDark p-6 rounded-2xl text-center text-gray-400 text-xs">لا توجد مصادر رواتب أو مستحقات مسجلة.</div>`;
-                return;
-            }
-
-            container.innerHTML = appData.salarySources.map(source => {
-                const uncollectedTotal = (source.uncollectedMonths || 0) * source.amount;
                 return `
-                    <div class="bg-white dark:bg-samsung-cardDark p-4 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-2">
-                        <div class="flex justify-between items-center">
-                            <div class="font-bold text-sm text-gray-800 dark:text-gray-100">${source.name}</div>
-                            <span class="text-xs font-bold text-indigo-500 num-financial">${formatMoney(source.amount)} / شهرياً</span>
+                    <div class="oneui-card p-3.5 border-r-4 ${isReceivable ? 'border-r-emerald-500' : 'border-r-rose-500'} ${isSettled ? 'opacity-60' : ''}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="flex items-center gap-1.5 mb-1">
+                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${isReceivable ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}">
+                                        ${isReceivable ? 'أطلب (طالب)' : 'عليّ (مطلوب)'}
+                                    </span>
+                                    ${isSettled ? `<span class="text-[9px] font-bold bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full">مسدّد بالكامل</span>` : ''}
+                                </div>
+                                <h3 class="text-xs font-black text-white">${debt.person}</h3>
+                                <p class="text-[10px] text-gray-400 mt-0.5">السبب: <span class="text-gray-200">${debt.reason || 'غير محدد'}</span></p>
+                                <p class="text-[9px] text-gray-500 mt-0.5"><i class="fa-solid fa-calendar text-[8px]"></i> <span class="num-font">${formatDate(debt.date)}</span></p>
+                            </div>
+
+                            <div class="text-left">
+                                <p class="num-font text-sm font-black ${isReceivable ? 'text-emerald-400' : 'text-rose-400'}">
+                                    ${formatMoney(debt.amount)} ${AppState.settings.currency}
+                                </p>
+                                <button onclick="deleteDebt('${debt.id}')" class="text-[9px] text-gray-500 hover:text-red-400 font-bold mt-1 block mr-auto">
+                                    <i class="fa-solid fa-trash-can"></i> حذف
+                                </button>
+                            </div>
                         </div>
-                        <div class="text-xs text-gray-400 flex justify-between">
-                            <span>المستحقات غير المستلمة:</span>
-                            <span class="font-bold text-amber-500"><span class="num-financial">${source.uncollectedMonths || 0}</span> أشهر (<span class="num-financial">${formatMoney(uncollectedTotal)}</span>)</span>
-                        </div>
-                        <div class="flex gap-2 pt-2">
-                            <button onclick="addUncollectedMonth('${source.id}')" class="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 py-2 rounded-xl text-xs font-semibold">+ تسجيل شهر مستحق</button>
-                            <button onclick="collectSalaryModal('${source.id}')" ${uncollectedTotal <= 0 ? 'disabled class="flex-1 bg-gray-300 text-gray-500 py-2 rounded-xl text-xs opacity-50"' : 'class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-xs shadow-md shadow-amber-500/20 active:scale-95"'}>استلام الراتب</button>
-                        </div>
+
+                        ${!isSettled ? `
+                            <div class="mt-3 pt-2.5 border-t border-samsung-borderDark/60 flex justify-end">
+                                <button onclick="openSettleDebtModal('${debt.id}')" class="oneui-btn text-xs px-3 py-1.5 text-white ${isReceivable ? 'bg-emerald-600 shadow-md shadow-emerald-600/20' : 'bg-rose-600 shadow-md shadow-rose-600/20'}">
+                                    <i class="fa-solid ${isReceivable ? 'fa-hand-holding-dollar' : 'fa-credit-card'} text-[10px]"></i> ${isReceivable ? 'استلام الدين' : 'تسديد الدين'}
+                                </button>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }).join('');
         }
 
-        function openAddSalarySourceModal() {
-            openBottomSheet(`
-                <h3 class="font-bold text-base mb-3">إضافة مصدر راتب جديد</h3>
-                <form onsubmit="handleSalarySourceSubmit(event)" class="space-y-3 text-xs">
-                    <div>
-                        <label class="block text-gray-400 mb-1">اسم الوظيفة / جهة الراتب</label>
-                        <input type="text" id="salName" required placeholder="مثال: راتب حكومي، وظيفة شركة" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
+        function openAddDebtModal() {
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-file-invoice text-samsung-accent"></i> تسجيل فاتورة دين جديد</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
                     </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">قيمة الراتب الشهري</label>
-                        <input type="number" id="salAmount" required min="1" placeholder="مثال: 750000" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold text-base num-financial">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">عدد الأشهر المستحقة حالياً ولم تُستلم بعد</label>
-                        <input type="number" id="salUncollectedMonths" value="0" min="0" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 num-financial">
-                    </div>
-                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-indigo-600/20 active:scale-95 transition">حفظ المصدر</button>
-                </form>
+
+                    <form onsubmit="handleSaveDebt(event)" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">نوع الدين</label>
+                            <select id="debt-type" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="RECEIVABLE">🟢 أطلب دين (أنا الطالب / للآخرين في ذمتهم لي)</option>
+                                <option value="PAYABLE">🔴 عليّ دين (أنا المطلوب / أطلب الناس وأدين لهم)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">اسم الشخص / الجهة</label>
+                            <input type="text" id="debt-person" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="مثال: أحمد علي / أبو محمد">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">المبلغ</label>
+                            <input type="number" id="debt-amount" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="أدخل المبلغ">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">السبب / التفاصيل</label>
+                            <input type="text" id="debt-reason" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="مثال: قرض شخصي / شراء بضاعة">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">تاريخ الدين</label>
+                            <input type="date" id="debt-date" required class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" value="${new Date().toISOString().split('T')[0]}">
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn bg-samsung-accent text-white font-bold py-2.5 mt-3 shadow-md shadow-samsung-accent/20">
+                            حفظ الدين
+                        </button>
+                    </form>
+                </div>
             `);
         }
 
-        function handleSalarySourceSubmit(e) {
+        async function handleSaveDebt(e) {
             e.preventDefault();
-            const name = document.getElementById('salName').value;
-            const amount = parseFloat(document.getElementById('salAmount').value);
-            const uncollectedMonths = parseInt(document.getElementById('salUncollectedMonths').value) || 0;
+            const type = document.getElementById('debt-type').value;
+            const person = document.getElementById('debt-person').value;
+            const amount = parseFloat(document.getElementById('debt-amount').value);
+            const reason = document.getElementById('debt-reason').value || '';
+            const date = document.getElementById('debt-date').value;
 
-            appData.salarySources.push({
-                id: 'sal_' + Date.now(),
-                name,
-                amount,
-                uncollectedMonths,
-                status: 'ACTIVE'
-            });
+            const id = "DEBT_" + Date.now();
+            const newDebt = { id, type, person, amount, reason, date, status: 'PENDING' };
 
-            saveData();
-            closeAllModals();
-            renderAll();
+            await saveToDB("debts", newDebt);
+            AppState.debts.push(newDebt);
+
+            closeModal();
+            renderUI();
+            showToast("تم تسجيل الدين بنجاح!", false);
         }
 
-        function addUncollectedMonth(sourceId) {
-            const s = appData.salarySources.find(x => x.id === sourceId);
-            if (s) {
-                s.uncollectedMonths = (s.uncollectedMonths || 0) + 1;
-                saveData();
-                renderAll();
-            }
-        }
+        function openSettleDebtModal(debtId) {
+            const debt = AppState.debts.find(d => d.id === debtId);
+            if (!debt) return;
 
-        function collectSalaryModal(sourceId) {
-            const source = appData.salarySources.find(s => s.id === sourceId);
-            if (!source) return;
+            const isReceivable = debt.type === 'RECEIVABLE';
 
-            openBottomSheet(`
-                <h3 class="font-bold text-base mb-3">استلام راتب: ${source.name}</h3>
-                <form onsubmit="handleCollectSalarySubmit(event, '${source.id}')" class="space-y-3 text-xs">
-                    <div>
-                        <label class="block text-gray-400 mb-1">المبلغ المراد استلامه ودخوله الحساب</label>
-                        <input type="number" id="colVal" value="${source.amount}" required class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold text-base num-financial">
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white">${isReceivable ? 'استلام قيمة الدين' : 'تسديد قيمة الدين'}</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
                     </div>
-                    <div>
-                        <label class="block text-gray-400 mb-1">إيداع في حساب</label>
-                        <select id="colAcc" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3">
-                            <option value="bank">البنك المنزلي</option>
-                            <option value="wallet">المحفظة الشخصية</option>
-                        </select>
+
+                    <div class="p-3 rounded-2xl border text-[11px] space-y-1 ${isReceivable ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30'}">
+                        <p class="text-gray-300">الشخص: <strong class="text-white font-bold">${debt.person}</strong></p>
+                        <p class="text-gray-300">المبلغ المستحق: <strong class="num-font font-black ${isReceivable ? 'text-emerald-400' : 'text-rose-400'}">${formatMoney(debt.amount)} ${AppState.settings.currency}</strong></p>
                     </div>
-                    <button type="submit" class="w-full bg-amber-500 text-white font-bold py-3 rounded-2xl shadow-lg shadow-amber-500/20 active:scale-95 transition">تأكيد الاستلام الفعلي</button>
-                </form>
+
+                    <form onsubmit="handleExecuteSettleDebt(event, '${debt.id}')" class="space-y-2.5 text-xs">
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">${isReceivable ? 'إيداع المبلغ في حساب' : 'خصم المبلغ من حساب'}</label>
+                            <select id="settle-account" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="WALLET">المحفظة الشخصية (المتاح: ${formatMoney(AppState.accounts.WALLET.balance)} IQD)</option>
+                                <option value="BANK">البنك المنزلي (المتاح: ${formatMoney(AppState.accounts.BANK.balance)} IQD)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full oneui-btn ${isReceivable ? 'bg-emerald-600 shadow-emerald-600/20' : 'bg-rose-600 shadow-rose-600/20'} text-white font-bold py-2.5 mt-3 shadow-md">
+                            تأكيد ${isReceivable ? 'الاستلام والإيداع' : 'التسديد والخصم'}
+                        </button>
+                    </form>
+                </div>
             `);
         }
 
-        function handleCollectSalarySubmit(e, sourceId) {
+        async function handleExecuteSettleDebt(e, debtId) {
             e.preventDefault();
-            const source = appData.salarySources.find(s => s.id === sourceId);
-            const colVal = parseFloat(document.getElementById('colVal').value);
-            const account = document.getElementById('colAcc').value;
+            const debt = AppState.debts.find(d => d.id === debtId);
+            if (!debt) return;
 
-            openConfirmModal(
-                "تأكيد استلام راتب",
-                `
-                <div>مصدر الراتب: <b>${source.name}</b></div>
-                <div>المبلغ المستلم: <b class="num-financial">${formatMoney(colVal)}</b></div>
-                <div>سيتم إيداعه في: <b>${account === 'wallet' ? 'المحفظة' : 'البنك'}</b></div>
-                `,
-                () => {
-                    if (source.uncollectedMonths > 0) {
-                        source.uncollectedMonths -= 1;
-                    }
+            const accountId = document.getElementById('settle-account').value;
+            const isReceivable = debt.type === 'RECEIVABLE';
 
-                    appData.logs.push({
-                        id: 'log_' + Date.now(),
-                        type: 'SALARY_COLLECTION',
-                        amount: colVal,
-                        account,
-                        description: `استلام راتب: ${source.name}`,
-                        date: new Date().toISOString().substring(0,10),
-                        refId: source.id
-                    });
-
-                    saveData();
-                    closeAllModals();
-                    renderAll();
-                }
-            );
-        }
-
-        // --- REPORTS & CHART ---
-        let expenseChartInstance = null;
-        function renderChart() {
-            const ctx = document.getElementById('expenseChart');
-            if (!ctx) return;
-
-            const categoryTotals = {};
-            appData.expenseCategories.forEach(c => categoryTotals[c] = 0);
-
-            appData.expenses.forEach(e => {
-                categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.amount;
-            });
-
-            const labels = Object.keys(categoryTotals);
-            const data = Object.values(categoryTotals);
-
-            if (expenseChartInstance) expenseChartInstance.destroy();
-
-            expenseChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels,
-                    datasets: [{
-                        data,
-                        backgroundColor: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { font: { family: 'Tajawal' }, boxWidth: 10 } }
-                    }
-                }
-            });
-        }
-
-        // --- MODAL UTILITIES ---
-        function openBottomSheet(htmlContent) {
-            document.getElementById('bottomSheetContent').innerHTML = htmlContent;
-            document.getElementById('modalOverlay').classList.remove('hidden');
-            const sheet = document.getElementById('bottomSheet');
-            sheet.classList.remove('translate-y-full');
-        }
-
-        function closeAllModals() {
-            document.getElementById('modalOverlay').classList.add('hidden');
-            document.getElementById('bottomSheet').classList.add('translate-y-full');
-            document.getElementById('confirmModal').classList.add('hidden');
-        }
-
-        function openConfirmModal(title, detailsHtml, onConfirm) {
-            document.getElementById('confirmTitle').innerText = title;
-            document.getElementById('confirmDetails').innerHTML = detailsHtml;
-            document.getElementById('modalOverlay').classList.remove('hidden');
-            document.getElementById('confirmModal').classList.remove('hidden');
-
-            const btn = document.getElementById('confirmExecuteBtn');
-            btn.onclick = onConfirm;
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.add('hidden');
-            document.getElementById('modalOverlay').classList.add('hidden');
-        }
-
-        // Logs Modal
-        function openLogsModal() {
-            document.getElementById('logsModal').classList.remove('hidden');
-            renderLogsList();
-        }
-
-        function closeLogsModal() {
-            document.getElementById('logsModal').classList.add('hidden');
-        }
-
-        function renderLogsList() {
-            const container = document.getElementById('fullLogsList');
-            const search = document.getElementById('logSearchInput').value.toLowerCase();
-            const filterType = document.getElementById('logTypeFilter').value;
-
-            let logs = appData.logs;
-            if (filterType !== 'all') logs = logs.filter(l => l.type === filterType);
-            if (search) logs = logs.filter(l => l.description.toLowerCase().includes(search));
-
-            if (logs.length === 0) {
-                container.innerHTML = `<div class="p-4 text-center text-gray-400">لا توجد نتائج.</div>`;
+            if (!isReceivable && debt.amount > AppState.accounts[accountId].balance) {
+                showToast(`الرصيد المتاح في ${AppState.accounts[accountId].name} لا يكفي لتسديد هذا الدين!`);
                 return;
             }
 
-            container.innerHTML = logs.slice().reverse().map(l => `
-                <div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-2xl flex justify-between items-center">
-                    <div>
-                        <div class="font-bold text-gray-800 dark:text-gray-100">${l.description}</div>
-                        <div class="text-[10px] text-gray-400"><span class="num-financial">${l.date}</span> • ${l.account || 'حسابات متعددة'}</div>
+            debt.status = 'SETTLED';
+
+            const transaction = {
+                id: "TX_" + Date.now(),
+                type: isReceivable ? 'DEBT_COLLECTION' : 'DEBT_PAYMENT',
+                amount: debt.amount,
+                accountId,
+                description: isReceivable ? `استلام دين من: ${debt.person}` : `تسديد دين لـ: ${debt.person}`,
+                date: new Date().toISOString(),
+                referenceId: debt.id
+            };
+
+            await saveToDB("debts", debt);
+            await saveToDB("transactions", transaction);
+
+            AppState.transactions.push(transaction);
+
+            recalculateAllBalances();
+            closeModal();
+            renderUI();
+            showToast(isReceivable ? "تم استلام الدين وإيداعه برصيدك" : "تم تسديد الدين وخصمه من رصيدك", false);
+        }
+
+        async function deleteDebt(debtId) {
+            AppState.debts = AppState.debts.filter(d => d.id !== debtId);
+            await removeFromDB("debts", debtId);
+            renderUI();
+            showToast("تم حذف سجل الدين بنجاح");
+        }
+
+        /* ==================== SETTINGS & PDF LOGIC ==================== */
+        function openSettingsModal() {
+            showModal(`
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center pb-2 border-b border-samsung-borderDark">
+                        <h3 class="text-xs font-bold text-white"><i class="fa-solid fa-gear text-samsung-accent"></i> التقارير والنسخ الاحتياطي (PDF)</h3>
+                        <button onclick="closeModal()" class="text-gray-400 text-base">&times;</button>
                     </div>
-                    <div class="font-bold num-financial ${l.type === 'INCOME' || l.type === 'SALARY_COLLECTION' ? 'text-emerald-500' : 'text-rose-500'}">
-                        ${formatMoney(l.amount)}
+
+                    <div class="space-y-2 text-xs">
+                        <button onclick="exportToPDF()" class="w-full oneui-btn bg-samsung-cardLight border border-samsung-borderDark p-3 flex items-center justify-between text-white hover:bg-samsung-borderDark/40">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-file-pdf text-red-500 text-base"></i> تصدير كشف حساب شامل (PDF)</span>
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        </button>
+
+                        <button onclick="resetAllDatabaseData()" class="w-full oneui-btn bg-rose-500/10 border border-rose-500/30 p-3 flex items-center justify-between text-rose-400 hover:bg-rose-500/20">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-trash-can"></i> مسح جميع البيانات والبدء من جديد</span>
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        </button>
                     </div>
-                </div>
-            `).join('');
-        }
-
-        // Countdown Timer Real-time Check
-        function updateCountdownDisplays() {
-            renderAll();
-        }
-
-        // Settings Logic
-        function saveAppSettings() {
-            appData.settings.appName = document.getElementById('settingAppName').value;
-            appData.settings.currency = document.getElementById('settingCurrency').value;
-            document.getElementById('appTitleHeader').innerText = appData.settings.appName;
-            document.getElementById('currentCurrencyBadge').innerText = 'العملة: ' + appData.settings.currency;
-            saveData();
-            renderAll();
-        }
-
-        function toggleTheme() {
-            appData.settings.darkMode = !appData.settings.darkMode;
-            applyTheme();
-            saveData();
-        }
-
-        function applyTheme() {
-            if (appData.settings.darkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-
-        function openSetInitialBalanceModal(accKey) {
-            const current = appData.accounts[accKey].initialBalance;
-            openBottomSheet(`
-                <h3 class="font-bold text-base mb-3">تحديث الرصيد الافتتاحي</h3>
-                <div class="space-y-3 text-xs">
-                    <input type="number" id="initBalInput" value="${current}" class="w-full bg-gray-100 dark:bg-gray-800 border-none rounded-xl p-3 font-bold text-base num-financial">
-                    <button onclick="saveInitialBalance('${accKey}')" class="w-full bg-blue-600 text-white py-3 rounded-2xl font-bold">تأكيد الحفظ</button>
                 </div>
             `);
         }
 
-        function saveInitialBalance(accKey) {
-            const val = parseFloat(document.getElementById('initBalInput').value) || 0;
-            appData.accounts[accKey].initialBalance = val;
-            saveData();
-            closeAllModals();
-            renderAll();
-        }
+        function exportToPDF() {
+            showToast("جاري تجهيز تقرير الـ PDF...", false);
 
-        // Backup Export & Import JSON
-        function exportBackupJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `samsung_finance_backup_${new Date().toISOString().substring(0,10)}.json`);
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
-        }
+            const container = document.getElementById('pdf-export-template');
+            const dateStr = new Date().toLocaleDateString('ar-IQ', { year: 'numeric', month: 'long', day: 'numeric' });
 
-        function importBackupJSON(event) {
-            const fileReader = new FileReader();
-            fileReader.onload = function (e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (parsed && parsed.accounts && parsed.logs) {
-                        if (confirm("هل تريد استبدال بياناتك الحالية بالنسخة الملحقة؟")) {
-                            appData = parsed;
-                            saveData();
-                            renderAll();
-                            alert("تمت استعادة النسخة الاحتياطية بنجاح.");
-                        }
-                    } else {
-                        alert("ملف غير صالح أو بنيته غير متوافقة.");
-                    }
-                } catch (ex) {
-                    alert("تعذر قراءة ملف JSON.");
-                }
+            const walletBal = AppState.accounts.WALLET.balance;
+            const bankBal = AppState.accounts.BANK.balance;
+            const totalBal = walletBal + bankBal;
+
+            container.innerHTML = `
+                <div style="padding: 20px; font-family: 'Tajawal', sans-serif; color: #111;">
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 20px;">
+                        <div>
+                            <h1 style="font-size: 20px; font-weight: 800; color: #1e293b; margin: 0;">كشف حساب وتقارير الماليّة الشخصية</h1>
+                            <p style="font-size: 11px; color: #64748b; margin-top: 4px;">تاريخ التقرير: ${dateStr}</p>
+                        </div>
+                        <div style="text-align: left;">
+                            <span style="font-size: 14px; font-weight: bold; color: #2563eb;">Samsung Galaxy A55</span>
+                        </div>
+                    </div>
+
+                    <!-- Balances Summary -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
+                            <span style="font-size: 10px; color: #64748b; font-weight: bold; display: block;">إجمالي السيولة النقدية</span>
+                            <strong style="font-size: 16px; color: #0f172a; font-family: 'Cairo';">${formatMoney(totalBal)} IQD</strong>
+                        </div>
+                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
+                            <span style="font-size: 10px; color: #64748b; font-weight: bold; display: block;">المحفظة الشخصية</span>
+                            <strong style="font-size: 14px; color: #2563eb; font-family: 'Cairo';">${formatMoney(walletBal)} IQD</strong>
+                        </div>
+                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
+                            <span style="font-size: 10px; color: #64748b; font-weight: bold; display: block;">البنك المنزلي</span>
+                            <strong style="font-size: 14px; color: #059669; font-family: 'Cairo';">${formatMoney(bankBal)} IQD</strong>
+                        </div>
+                    </div>
+
+                    <!-- Transactions Table -->
+                    <h3 style="font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #1e293b; border-right: 4px solid #2563eb; padding-right: 8px;">سجل كافة العمليات المالية</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: right; margin-bottom: 25px;">
+                        <thead>
+                            <tr style="background: #e2e8f0; color: #334155;">
+                                <th style="padding: 8px; border: 1px solid #cbd5e1;">التاريخ</th>
+                                <th style="padding: 8px; border: 1px solid #cbd5e1;">النوع / البيان</th>
+                                <th style="padding: 8px; border: 1px solid #cbd5e1;">الحساب</th>
+                                <th style="padding: 8px; border: 1px solid #cbd5e1; text-align: left;">المبلغ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${AppState.transactions.length === 0 ? '<tr><td colspan="4" style="text-align:center; padding:10px;">لا توجد عمليات مسجلة</td></tr>' : 
+                            [...AppState.transactions].reverse().map(t => `
+                                <tr style="border-bottom: 1px solid #e2e8f0;">
+                                    <td style="padding: 6px 8px; font-family: 'Cairo'; border: 1px solid #cbd5e1;">${formatDate(t.date)}</td>
+                                    <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">${t.description || t.type}</td>
+                                    <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">${t.accountId ? (AppState.accounts[t.accountId]?.name || '-') : '-'}</td>
+                                    <td style="padding: 6px 8px; font-weight: bold; font-family: 'Cairo'; text-align: left; border: 1px solid #cbd5e1;">${formatMoney(t.amount)} IQD</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <!-- Debts Table -->
+                    <h3 style="font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #1e293b; border-right: 4px solid #f59e0b; padding-right: 8px;">سجل الديون القائمة</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: right;">
+                        <thead>
+                            <tr style="background: #e2e8f0; color: #334155;">
+                                <th style="padding: 8px; border: 1px solid #cbd5e1;">الشخص / الجهة</th>
+                                <th style="padding: 8px; border: 1px solid #cbd5e1;">النوع</th>
+                                <th style="padding: 8px; border: 1px solid #cbd5e1;">السبب</th>
+                                <th style="padding: 8px; border: 1px solid #cbd5e1; text-align: left;">المبلغ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${AppState.debts.length === 0 ? '<tr><td colspan="4" style="text-align:center; padding:10px;">لا توجد ديون مسجلة</td></tr>' : 
+                            AppState.debts.map(d => `
+                                <tr style="border-bottom: 1px solid #e2e8f0;">
+                                    <td style="padding: 6px 8px; font-weight: bold; border: 1px solid #cbd5e1;">${d.person}</td>
+                                    <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">${d.type === 'RECEIVABLE' ? 'أطلب (طالب)' : 'عليّ (مطلوب)'}</td>
+                                    <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">${d.reason || '-'}</td>
+                                    <td style="padding: 6px 8px; font-weight: bold; font-family: 'Cairo'; text-align: left; border: 1px solid #cbd5e1;">${formatMoney(d.amount)} IQD</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            container.classList.remove('hidden');
+
+            const opt = {
+                margin:       0.3,
+                filename:     `كشف_حساب_مالي_${new Date().toISOString().split('T')[0]}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
-            fileReader.readAsText(event.target.files[0]);
-        }
 
-        function exportLogsCSV() {
-            let csv = "التاريخ,النوع,المبلغ,الحساب,الوصف\n";
-            appData.logs.forEach(l => {
-                csv += `"${l.date}","${l.type}","${l.amount}","${l.account || ''}","${l.description}"\n`;
+            html2pdf().set(opt).from(container).save().then(() => {
+                container.classList.add('hidden');
+                closeModal();
+                showToast("تم تصدير ملف الـ PDF بنجاح!", false);
+            }).catch(err => {
+                console.error(err);
+                container.classList.add('hidden');
+                showToast("حدث خطأ أثناء تصدير ملف الـ PDF!");
             });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `finance_logs_${new Date().toISOString().substring(0,10)}.csv`;
-            a.click();
         }
 
-        function confirmWipeData() {
-            if (confirm("تحذير!! هل أنت متأكد من مسح كافة البيانات بشكل دائم؟")) {
-                localStorage.removeItem('samsung_a55_finance_db');
-                location.reload();
+        async function resetAllDatabaseData() {
+            if (confirm("هل أنت أصلًا متأكد من مسح كافة البيانات بشكل نهائي؟")) {
+                for (let storeName of ["accounts", "incomes", "expenses", "installments", "salarySources", "debts", "transactions"]) {
+                    const tx = AppState.db.transaction(storeName, "readwrite");
+                    await tx.objectStore(storeName).clear();
+                }
+
+                AppState.accounts.WALLET = { id: "WALLET", name: "المحفظة الشخصية", balance: 0, initialBalance: 0 };
+                AppState.accounts.BANK = { id: "BANK", name: "البنك المنزلي", balance: 0, initialBalance: 0 };
+                AppState.incomes = [];
+                AppState.expenses = [];
+                AppState.installments = [];
+                AppState.salarySources = [];
+                AppState.debts = [];
+                AppState.transactions = [];
+
+                await saveToDB("accounts", AppState.accounts.WALLET);
+                await saveToDB("accounts", AppState.accounts.BANK);
+
+                closeModal();
+                renderUI();
+                showToast("تم مسح كافة البيانات وتجهيز التطبيق من جديد", false);
             }
         }
+
+        /* INITIALIZATION */
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initDB();
+            await loadAllData();
+        });
     </script>
 </body>
 </html>
