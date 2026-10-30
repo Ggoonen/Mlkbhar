@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -50,30 +51,62 @@
             color: #F3F4F6;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            overflow-x: hidden;
         }
         .num-font {
             font-family: 'Cairo', 'Tajawal', sans-serif;
             font-weight: 700;
         }
+
+        /* Smooth Tab Animations */
         .tab-content {
             display: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .tab-content.active {
             display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
+
         .oneui-card {
             background-color: #161C2E;
             border: 1px solid #2D3748;
             border-radius: 1.25rem;
             box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         }
+        .oneui-card:active {
+            transform: scale(0.985);
+        }
+
         .oneui-btn {
             border-radius: 0.875rem;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .oneui-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.94);
         }
+
+        /* Bottom Sheet & Modal Animations */
+        #modal-container {
+            transition: opacity 0.25s ease-in-out;
+        }
+        #modal-content {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Pulse Animation for active indicators */
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.03); }
+        }
+        .animate-pulse-subtle {
+            animation: subtlePulse 3s infinite ease-in-out;
+        }
+
         /* Hide Scrollbar */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -82,14 +115,25 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* Category pill selection effect */
+        .category-pill {
+            transition: all 0.2s ease;
+        }
+        .category-pill.selected {
+            background-color: #3B82F6 !important;
+            color: #FFFFFF !important;
+            border-color: #60A5FA !important;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
     </style>
 </head>
 <body class="pb-24 max-w-md mx-auto min-h-screen relative overflow-x-hidden">
 
     <!-- TOP BAR -->
-    <header class="sticky top-0 z-30 bg-samsung-bgDark/90 backdrop-blur-md border-b border-samsung-borderDark/60 px-4 py-3 flex justify-between items-center">
+    <header class="sticky top-0 z-30 bg-samsung-bgDark/90 backdrop-blur-md border-b border-samsung-borderDark/60 px-4 py-3 flex justify-between items-center transition-all">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-xl bg-samsung-accent/20 border border-samsung-accent/40 flex items-center justify-center text-samsung-accent text-sm">
+            <div class="w-8 h-8 rounded-xl bg-samsung-accent/20 border border-samsung-accent/40 flex items-center justify-center text-samsung-accent text-sm animate-pulse-subtle">
                 <i class="fa-solid fa-wallet"></i>
             </div>
             <div>
@@ -97,7 +141,7 @@
                 <p class="text-[9px] text-gray-400 font-bold">Samsung Galaxy A55</p>
             </div>
         </div>
-        <button onclick="openSettingsModal()" class="w-8 h-8 rounded-xl bg-samsung-cardDark border border-samsung-borderDark flex items-center justify-center text-gray-300 text-xs hover:text-white">
+        <button onclick="openSettingsModal()" class="w-8 h-8 rounded-xl bg-samsung-cardDark border border-samsung-borderDark flex items-center justify-center text-gray-300 text-xs hover:text-white oneui-btn">
             <i class="fa-solid fa-gear"></i>
         </button>
     </header>
@@ -118,13 +162,13 @@
             <!-- Total Net Worth Card -->
             <div class="oneui-card p-4 bg-gradient-to-br from-samsung-cardLight via-samsung-cardDark to-samsung-cardDark relative overflow-hidden">
                 <div class="flex justify-between items-start mb-2">
-                    <span class="text-[10px] font-bold text-gray-400 bg-samsung-bgDark/60 px-2.5 py-1 rounded-full border border-samsung-borderDark">إجمالي الأموال المتاحة فعلياً</span>
-                    <button onclick="openSetInitialBalancesModal()" class="text-[10px] font-bold text-samsung-accent bg-samsung-accent/10 px-2.5 py-1 rounded-full border border-samsung-accent/30">
+                    <span class="text-[10px] font-bold text-gray-300 bg-samsung-bgDark/60 px-2.5 py-1 rounded-full border border-samsung-borderDark">إجمالي الأموال المتاحة فعلياً</span>
+                    <button onclick="openSetInitialBalancesModal()" class="text-[10px] font-bold text-samsung-accent bg-samsung-accent/10 px-2.5 py-1 rounded-full border border-samsung-accent/30 oneui-btn">
                         <i class="fa-solid fa-pen-to-square"></i> الرصيد الأولي
                     </button>
                 </div>
-                <h2 id="total-actual-money" class="num-font text-2xl font-black text-white my-1">0 IQD</h2>
-                <p class="text-[9px] text-gray-400">مجموع السيولة النقدية في المحفظة والبنك المنزلي</p>
+                <h2 id="total-actual-money" class="num-font text-2xl font-black text-white my-1 tracking-wide">0 IQD</h2>
+                <p class="text-[9px] text-gray-400">مجموع السيولة النقدية المحفوظة في المحفظة والبنك المنزلي</p>
 
                 <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-samsung-borderDark/80">
                     <div class="bg-samsung-bgDark/50 p-2.5 rounded-xl border border-samsung-borderDark/50">
@@ -139,7 +183,7 @@
             </div>
 
             <!-- Internal Transfer Quick Action -->
-            <button onclick="openTransferModal()" class="w-full oneui-card p-3 flex items-center justify-between text-xs font-bold text-samsung-accent bg-samsung-accent/10 border-samsung-accent/30 hover:bg-samsung-accent/20 transition">
+            <button onclick="openTransferModal()" class="w-full oneui-card p-3 flex items-center justify-between text-xs font-bold text-samsung-accent bg-samsung-accent/10 border-samsung-accent/30 hover:bg-samsung-accent/20 transition oneui-btn">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-arrows-rotate text-sm"></i> إجراء تحويل داخلي بين الحسابين</span>
                 <i class="fa-solid fa-chevron-left text-[10px]"></i>
             </button>
@@ -164,11 +208,11 @@
                 </div>
             </div>
 
-            <!-- Recent Transactions Mini Log -->
+            <!-- Recent Transactions Log -->
             <div class="oneui-card p-3.5 space-y-2.5">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xs font-extrabold text-white"><i class="fa-solid fa-clock-rotate-left text-samsung-accent"></i> آخر العمليات المالية</h3>
-                    <button onclick="switchTab('tab-expenses')" class="text-[10px] font-bold text-samsung-accent">عرض الكل</button>
+                    <button onclick="switchTab('tab-expenses')" class="text-[10px] font-bold text-samsung-accent oneui-btn">عرض الكل</button>
                 </div>
                 <div id="home-recent-transactions-list" class="space-y-2">
                     <p class="text-[10px] text-gray-500 text-center py-2">لا توجد عمليات مسجلة حديثاً</p>
@@ -183,9 +227,19 @@
                     <h2 class="text-xs font-extrabold text-white">إدارة مصادر الدخل</h2>
                     <p class="text-[10px] text-gray-400">تسجيل وإيداع الأموال الفعلية</p>
                 </div>
-                <button onclick="openAddIncomeModal()" class="oneui-btn bg-samsung-income text-white px-3.5 py-1.5 text-xs shadow-md shadow-samsung-income/20">
+                <button onclick="openAddIncomeModal()" class="oneui-btn bg-samsung-income text-white px-3.5 py-1.5 text-xs font-bold shadow-md shadow-samsung-income/20">
                     <i class="fa-solid fa-plus text-[10px]"></i> إضافة دخل
                 </button>
+            </div>
+
+            <!-- Income Category Filters -->
+            <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
+                <button onclick="filterIncomes('ALL')" id="inc-cat-ALL" class="inc-cat-btn category-pill selected text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">الكل</button>
+                <button onclick="filterIncomes('راتب')" id="inc-cat-راتب" class="inc-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">راتب</button>
+                <button onclick="filterIncomes('تجارة')" id="inc-cat-تجارة" class="inc-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">تجارة / أرباح</button>
+                <button onclick="filterIncomes('عمل حُر')" id="inc-cat-عمل حُر" class="inc-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">عمل حُر</button>
+                <button onclick="filterIncomes('إيجار')" id="inc-cat-إيجار" class="inc-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">إيجار</button>
+                <button onclick="filterIncomes('هدية')" id="inc-cat-هدية" class="inc-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">هدية / مكافأة</button>
             </div>
 
             <div id="incomes-list-container" class="space-y-2.5"></div>
@@ -196,11 +250,22 @@
             <div class="flex justify-between items-center bg-samsung-cardDark p-3 rounded-2xl border border-samsung-borderDark">
                 <div>
                     <h2 class="text-xs font-extrabold text-white">سجل المصاريف</h2>
-                    <p class="text-[10px] text-gray-400">تتبع كافة المشتريات والسحوبات اليومية</p>
+                    <p class="text-[10px] text-gray-400">تتبع المشتريات والخصم المباشر</p>
                 </div>
-                <button onclick="openAddExpenseModal()" class="oneui-btn bg-samsung-expense text-white px-3.5 py-1.5 text-xs shadow-md shadow-samsung-expense/20">
+                <button onclick="openAddExpenseModal()" class="oneui-btn bg-samsung-expense text-white px-3.5 py-1.5 text-xs font-bold shadow-md shadow-samsung-expense/20">
                     <i class="fa-solid fa-plus text-[10px]"></i> مصروف جديد
                 </button>
+            </div>
+
+            <!-- Expense Category Quick Filters -->
+            <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
+                <button onclick="filterExpenses('ALL')" id="exp-cat-ALL" class="exp-cat-btn category-pill selected text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">الكل</button>
+                <button onclick="filterExpenses('طعام ومطاعم')" id="exp-cat-طعام ومطاعم" class="exp-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">طعام ومطاعم</button>
+                <button onclick="filterExpenses('تسوق')" id="exp-cat-تسوق" class="exp-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">تسوق</button>
+                <button onclick="filterExpenses('فواتير وخدمات')" id="exp-cat-فواتير وخدمات" class="exp-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">فواتير</button>
+                <button onclick="filterExpenses('مواصلات ووقود')" id="exp-cat-مواصلات ووقود" class="exp-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">مواصلات</button>
+                <button onclick="filterExpenses('صحة وطبابة')" id="exp-cat-صحة وطبابة" class="exp-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">صحة</button>
+                <button onclick="filterExpenses('ترفيه وطلعات')" id="exp-cat-ترفيه وطلعات" class="exp-cat-btn category-pill text-[10px] font-bold px-3 py-1 rounded-full bg-samsung-cardDark border border-samsung-borderDark text-gray-300 whitespace-nowrap">طلعات</button>
             </div>
 
             <div id="expenses-list-container" class="space-y-2.5"></div>
@@ -213,7 +278,7 @@
                     <h2 class="text-xs font-extrabold text-white">إدارة الأقساط والالتزامات</h2>
                     <p class="text-[10px] text-gray-400">جدولة الدفعات ومتابعة السداد</p>
                 </div>
-                <button onclick="openAddInstallmentModal()" class="oneui-btn bg-samsung-installment text-white px-3.5 py-1.5 text-xs shadow-md shadow-samsung-installment/20">
+                <button onclick="openAddInstallmentModal()" class="oneui-btn bg-samsung-installment text-white px-3.5 py-1.5 text-xs font-bold shadow-md shadow-samsung-installment/20">
                     <i class="fa-solid fa-plus text-[10px]"></i> قسط جديد
                 </button>
             </div>
@@ -230,7 +295,7 @@
                         <h2 class="text-base font-black text-white mt-1">الرواتب والأجور المتراكمة</h2>
                         <p class="text-[10px] text-gray-300 mt-0.5">تتبع الرواتب المستحقة وسحبها مباشرة لرصيدك</p>
                     </div>
-                    <button onclick="openAddSalarySourceModal()" class="oneui-btn bg-samsung-salary text-white px-3 py-1.5 text-xs shadow-lg shadow-samsung-salary/30">
+                    <button onclick="openAddSalarySourceModal()" class="oneui-btn bg-samsung-salary text-white px-3 py-1.5 text-xs font-bold shadow-lg shadow-samsung-salary/30">
                         <i class="fa-solid fa-plus text-[10px]"></i> مصدر جديد
                     </button>
                 </div>
@@ -257,7 +322,7 @@
                     <h2 class="text-xs font-extrabold text-white">إدارة الديون والتعهُّدات</h2>
                     <p class="text-[10px] text-gray-400">متابعة المستحقات لك وللآخرين</p>
                 </div>
-                <button onclick="openAddDebtModal()" class="oneui-btn bg-samsung-accent text-white px-3.5 py-1.5 text-xs shadow-md shadow-samsung-accent/20">
+                <button onclick="openAddDebtModal()" class="oneui-btn bg-samsung-accent text-white px-3.5 py-1.5 text-xs font-bold shadow-md shadow-samsung-accent/20">
                     <i class="fa-solid fa-plus text-[10px]"></i> دين جديد
                 </button>
             </div>
@@ -276,9 +341,9 @@
 
             <!-- Debt Filter Buttons -->
             <div class="flex items-center gap-2">
-                <button onclick="filterDebts('ALL')" id="debt-filter-ALL" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-accent text-white">الكل</button>
-                <button onclick="filterDebts('RECEIVABLE')" id="debt-filter-RECEIVABLE" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-cardDark border border-samsung-borderDark text-emerald-400">أطلبها (طالب)</button>
-                <button onclick="filterDebts('PAYABLE')" id="debt-filter-PAYABLE" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-cardDark border border-samsung-borderDark text-rose-400">عليّ (مطلوب)</button>
+                <button onclick="filterDebts('ALL')" id="debt-filter-ALL" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-accent text-white oneui-btn">الكل</button>
+                <button onclick="filterDebts('RECEIVABLE')" id="debt-filter-RECEIVABLE" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-cardDark border border-samsung-borderDark text-emerald-400 oneui-btn">أطلبها (طالب)</button>
+                <button onclick="filterDebts('PAYABLE')" id="debt-filter-PAYABLE" class="debt-filter-btn flex-1 py-1.5 text-[10px] font-bold rounded-xl bg-samsung-cardDark border border-samsung-borderDark text-rose-400 oneui-btn">عليّ (مطلوب)</button>
             </div>
 
             <!-- Debt Records Container -->
@@ -328,8 +393,8 @@
     </nav>
 
     <!-- GLOBAL BOTTOM SHEET MODAL CONTAINER -->
-    <div id="modal-container" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end justify-center hidden transition-opacity duration-200">
-        <div id="modal-content" class="w-full max-w-md bg-samsung-cardDark border-t border-samsung-borderDark rounded-t-3xl p-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl transition-transform transform translate-y-full">
+    <div id="modal-container" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end justify-center hidden opacity-0">
+        <div id="modal-content" class="w-full max-w-md bg-samsung-cardDark border-t border-samsung-borderDark rounded-t-3xl p-4 max-h-[85vh] overflow-y-auto no-scrollbar shadow-2xl transform translate-y-full">
             <!-- Modal body inserted dynamically -->
         </div>
     </div>
@@ -355,11 +420,13 @@
             salaryReceipts: [],
             debts: [],
             transactions: [],
-            activeDebtFilter: 'ALL'
+            activeDebtFilter: 'ALL',
+            activeExpenseCategory: 'ALL',
+            activeIncomeCategory: 'ALL'
         };
 
-        const DB_NAME = "FinApp_A55_DB_v3";
-        const DB_VERSION = 4;
+        const DB_NAME = "FinApp_A55_DB_v4";
+        const DB_VERSION = 5;
 
         function initDB() {
             return new Promise((resolve, reject) => {
@@ -467,12 +534,16 @@
             }, 3200);
         }
 
+        // PERSISTENT ACCURATE FINANCIAL ENGINE
         function recalculateAllBalances() {
+            // Re-anchor to fixed initial balances
             AppState.accounts.WALLET.balance = AppState.accounts.WALLET.initialBalance || 0;
             AppState.accounts.BANK.balance = AppState.accounts.BANK.initialBalance || 0;
 
+            // Sort transactions chronologically
             AppState.transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
 
+            // Strictly process each user-approved transaction
             AppState.transactions.forEach(t => {
                 if (t.type === 'INCOME' || t.type === 'SALARY_RECEIPT' || t.type === 'DEBT_COLLECTION') {
                     if (AppState.accounts[t.accountId]) {
@@ -507,11 +578,21 @@
         }
 
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('text-samsung-accent'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.add('text-gray-400'));
+            const currentTab = document.querySelector('.tab-content.active');
+            if (currentTab) {
+                currentTab.classList.remove('active');
+            }
 
-            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('text-samsung-accent');
+                el.classList.add('text-gray-400');
+            });
+
+            const newTab = document.getElementById(tabId);
+            if (newTab) {
+                newTab.classList.add('active');
+            }
+
             const navBtn = document.getElementById('nav-' + tabId);
             if (navBtn) {
                 navBtn.classList.remove('text-gray-400');
@@ -594,7 +675,7 @@
             const accName = t.accountId ? (AppState.accounts[t.accountId]?.name || '') : '';
 
             return `
-                <div class="flex items-center justify-between p-2.5 rounded-2xl bg-samsung-bgDark/60 border border-samsung-borderDark/60">
+                <div class="flex items-center justify-between p-2.5 rounded-2xl bg-samsung-bgDark/60 border border-samsung-borderDark/60 hover:border-samsung-accent/30 transition">
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-xl bg-samsung-cardDark flex items-center justify-center ${color} text-xs border border-samsung-borderDark">
                             <i class="fa-solid ${icon}"></i>
@@ -617,17 +698,19 @@
 
             container.classList.remove('hidden');
             setTimeout(() => {
+                container.classList.remove('opacity-0');
                 content.classList.remove('translate-y-full');
-            }, 10);
+            }, 15);
         }
 
         function closeModal() {
             const container = document.getElementById('modal-container');
             const content = document.getElementById('modal-content');
             content.classList.add('translate-y-full');
+            container.classList.add('opacity-0');
             setTimeout(() => {
                 container.classList.add('hidden');
-            }, 200);
+            }, 250);
         }
 
         function openSetInitialBalancesModal() {
@@ -761,16 +844,35 @@
         }
 
         /* ==================== INCOME TAB LOGIC ==================== */
+        function filterIncomes(category) {
+            AppState.activeIncomeCategory = category;
+            document.querySelectorAll('.inc-cat-btn').forEach(btn => btn.classList.remove('selected'));
+            const activeBtn = document.getElementById('inc-cat-' + category);
+            if(activeBtn) activeBtn.classList.add('selected');
+            renderIncomeTab();
+        }
+
         function renderIncomeTab() {
             const container = document.getElementById('incomes-list-container');
-            if (AppState.incomes.length === 0) {
-                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد مصادر دخل مسجلة. اضغط زر إضافة دخل.</div>`;
+            let list = AppState.incomes;
+
+            if (AppState.activeIncomeCategory !== 'ALL') {
+                list = list.filter(i => i.category === AppState.activeIncomeCategory || i.source.includes(AppState.activeIncomeCategory));
+            }
+
+            if (list.length === 0) {
+                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد مصادر دخل بهذه التصفية.</div>`;
                 return;
             }
 
-            container.innerHTML = [...AppState.incomes].reverse().map(inc => `
+            container.innerHTML = [...list].reverse().map(inc => `
                 <div class="oneui-card p-3.5 flex justify-between items-center border-r-4 border-r-samsung-income">
                     <div>
+                        <div class="flex items-center gap-1.5 mb-0.5">
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-samsung-income/20 text-samsung-income border border-samsung-income/30">
+                                ${inc.category || 'دخل'}
+                            </span>
+                        </div>
                         <h3 class="text-xs font-bold text-white">${inc.source}</h3>
                         <p class="text-[10px] text-gray-400"><span class="num-font">${formatDate(inc.date)}</span> • ${AppState.accounts[inc.accountId]?.name || ''}</p>
                         ${inc.notes ? `<p class="text-[9px] text-gray-500 mt-0.5">${inc.notes}</p>` : ''}
@@ -795,13 +897,25 @@
 
                     <form onsubmit="handleSaveIncome(event)" class="space-y-2.5 text-xs">
                         <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">تصنيف الدخل</label>
+                            <select id="income-category" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="راتب">راتب شهري / وظيفي</option>
+                                <option value="تجارة">تجارة / أرباح أعمال</option>
+                                <option value="عمل حُر">عمل حُر / مشروع خاص</option>
+                                <option value="إيجار">عائد إيجار عقار</option>
+                                <option value="هدية">هدية / مكافأة</option>
+                                <option value="عام">أخرى</option>
+                            </select>
+                        </div>
+
+                        <div>
                             <label class="text-[10px] text-gray-400 font-bold block mb-1">مبلغ الدخل</label>
                             <input type="number" id="income-amount" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="أدخل المبلغ">
                         </div>
 
                         <div>
-                            <label class="text-[10px] text-gray-400 font-bold block mb-1">مصدر الدخل</label>
-                            <input type="text" id="income-source" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="مثال: عمل حُر / إيجار / مكافأة">
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">مصدر الدخل / الاسم</label>
+                            <input type="text" id="income-source" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="مثال: عمل حُر / إيجار الشقة / راتب إضافي">
                         </div>
 
                         <div>
@@ -832,6 +946,7 @@
 
         async function handleSaveIncome(e) {
             e.preventDefault();
+            const category = document.getElementById('income-category').value;
             const amount = parseFloat(document.getElementById('income-amount').value);
             const source = document.getElementById('income-source').value;
             const accountId = document.getElementById('income-account').value;
@@ -839,14 +954,14 @@
             const notes = document.getElementById('income-notes').value || '';
 
             const id = "INC_" + Date.now();
-            const newIncome = { id, amount, source, accountId, date, notes };
+            const newIncome = { id, category, amount, source, accountId, date, notes };
 
             const transaction = {
                 id: "TX_" + Date.now(),
                 type: 'INCOME',
                 amount,
                 accountId,
-                description: `دخل: ${source}`,
+                description: `دخل (${category}): ${source}`,
                 date,
                 referenceId: id
             };
@@ -875,12 +990,24 @@
         }
 
         /* ==================== EXPENSES TAB LOGIC ==================== */
+        function filterExpenses(category) {
+            AppState.activeExpenseCategory = category;
+            document.querySelectorAll('.exp-cat-btn').forEach(btn => btn.classList.remove('selected'));
+            const activeBtn = document.getElementById('exp-cat-' + category);
+            if(activeBtn) activeBtn.classList.add('selected');
+            renderExpensesTab();
+        }
+
         function renderExpensesTab() {
             const container = document.getElementById('expenses-list-container');
-            const list = AppState.expenses;
+            let list = AppState.expenses;
+
+            if (AppState.activeExpenseCategory !== 'ALL') {
+                list = list.filter(e => e.category === AppState.activeExpenseCategory || e.title.includes(AppState.activeExpenseCategory));
+            }
 
             if (list.length === 0) {
-                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد مصاريف مسجلة. اضغط زر مصروف جديد.</div>`;
+                container.innerHTML = `<div class="oneui-card p-6 text-center text-xs text-gray-500 font-bold">لا توجد مصاريف بهذه التصفية.</div>`;
                 return;
             }
 
@@ -888,8 +1015,13 @@
                 return `
                     <div class="oneui-card p-3.5 flex justify-between items-center border-r-4 border-r-samsung-expense">
                         <div>
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-samsung-expense/20 text-samsung-expense border border-samsung-expense/30">
+                                    ${exp.category || 'عام'}
+                                </span>
+                            </div>
                             <h3 class="text-xs font-bold text-white">${exp.title}</h3>
-                            <p class="text-[10px] text-gray-400 mt-0.5"><span class="num-font">${formatDate(exp.date)}</span></p>
+                            <p class="text-[10px] text-gray-400 mt-0.5"><span class="num-font">${formatDate(exp.date)}</span> • ${AppState.accounts[exp.accountId]?.name || ''}</p>
                         </div>
                         <div class="text-left">
                             <span class="num-font text-sm font-black text-samsung-expense block">-${formatMoney(exp.amount)} ${AppState.settings.currency}</span>
@@ -912,13 +1044,35 @@
 
                     <form onsubmit="handleSaveExpense(event)" class="space-y-2.5 text-xs">
                         <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">التصنيف</label>
+                            <select id="expense-category" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="طعام ومطاعم">طعام ومطاعم ومسواق</option>
+                                <option value="تسوق">تسوق وملابس</option>
+                                <option value="فواتير وخدمات">فواتير ومعاملات وخدمات</option>
+                                <option value="مواصلات ووقود">مواصلات ووقود سيارة</option>
+                                <option value="صحة وطبابة">صحة وعلاج وطبابة</option>
+                                <option value="ترفيه وطلعات">ترفيه وطلعات وأماكن</option>
+                                <option value="سكن وصيانة">سكن واحتياجات منزلية</option>
+                                <option value="عام">أخرى</option>
+                            </select>
+                        </div>
+
+                        <div>
                             <label class="text-[10px] text-gray-400 font-bold block mb-1">المبلغ</label>
                             <input type="number" id="expense-amount" required min="1" class="num-font w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="أدخل المبلغ">
                         </div>
 
                         <div>
-                            <label class="text-[10px] text-gray-400 font-bold block mb-1">السبب / التفاصيل</label>
-                            <input type="text" id="expense-title" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="سبب الصرف (مثال: طعام، تسوق، وقود)">
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">السبب / المكان / التفاصيل</label>
+                            <input type="text" id="expense-title" required class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="تفاصيل المصروف (مثال: مطعم / وقود / مسواق)">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">خصم من حساب</label>
+                            <select id="expense-account" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="WALLET">المحفظة الشخصية (المتاح: ${formatMoney(AppState.accounts.WALLET.balance)} IQD)</option>
+                                <option value="BANK">البنك المنزلي (المتاح: ${formatMoney(AppState.accounts.BANK.balance)} IQD)</option>
+                            </select>
                         </div>
 
                         <div>
@@ -936,10 +1090,11 @@
 
         async function handleSaveExpense(e) {
             e.preventDefault();
+            const category = document.getElementById('expense-category').value;
             const amount = parseFloat(document.getElementById('expense-amount').value);
             const title = document.getElementById('expense-title').value;
+            const accountId = document.getElementById('expense-account').value;
             const date = document.getElementById('expense-date').value;
-            const accountId = 'WALLET'; // Default deduction from WALLET
 
             if (amount > AppState.accounts[accountId].balance) {
                 showToast(`الرصيد المتاح في ${AppState.accounts[accountId].name} لا يكفي لهذا المصروف!`);
@@ -947,14 +1102,14 @@
             }
 
             const id = "EXP_" + Date.now();
-            const newExpense = { id, title, amount, accountId, date };
+            const newExpense = { id, category, title, amount, accountId, date };
 
             const transaction = {
                 id: "TX_" + Date.now(),
                 type: 'EXPENSE',
                 amount,
                 accountId,
-                description: `مصروف: ${title}`,
+                description: `مصروف (${category}): ${title}`,
                 date,
                 referenceId: id
             };
@@ -1001,7 +1156,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <h3 class="text-xs font-extrabold text-white">${inst.title}</h3>
-                                <p class="text-[10px] text-gray-400">الجهة: ${inst.beneficiary || 'غير محدد'}</p>
+                                <p class="text-[10px] text-gray-400">الجهة: ${inst.beneficiary || 'غير محدد'} • الجدولة: ${inst.scheduleType || 'شهري'}</p>
                             </div>
                             <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${isCompleted ? 'bg-emerald-500/20 text-emerald-400' : 'bg-samsung-installment/20 text-samsung-installment'}">
                                 ${isCompleted ? 'مكتمل السداد' : 'قسط نشط'}
@@ -1051,6 +1206,16 @@
                             <input type="text" id="inst-beneficiary" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs" placeholder="اسم الشركة أو الشخص">
                         </div>
 
+                        <div>
+                            <label class="text-[10px] text-gray-400 font-bold block mb-1">نوع الجدولة</label>
+                            <select id="inst-schedule" class="w-full bg-samsung-bgDark border border-samsung-borderDark rounded-xl p-2.5 text-white focus:outline-none text-xs">
+                                <option value="شهري">شهري</option>
+                                <option value="أسبوعي">أسبوعي</option>
+                                <option value="كل أسبوعين">كل أسبوعين</option>
+                                <option value="مخصص">فترة مخصصة</option>
+                            </select>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="text-[10px] text-gray-400 font-bold block mb-1">إجمالي الالتزام</label>
@@ -1074,11 +1239,12 @@
             e.preventDefault();
             const title = document.getElementById('inst-title').value;
             const beneficiary = document.getElementById('inst-beneficiary').value || '';
+            const scheduleType = document.getElementById('inst-schedule').value;
             const totalAmount = parseFloat(document.getElementById('inst-total').value);
             const paymentAmount = parseFloat(document.getElementById('inst-payment').value);
 
             const id = "INST_" + Date.now();
-            const newInst = { id, title, beneficiary, totalAmount, paymentAmount, paidAmount: 0, status: 'ACTIVE' };
+            const newInst = { id, title, beneficiary, scheduleType, totalAmount, paymentAmount, paidAmount: 0, status: 'ACTIVE' };
 
             await saveToDB("installments", newInst);
             AppState.installments.push(newInst);
@@ -1728,7 +1894,7 @@
         }
 
         async function resetAllDatabaseData() {
-            if (confirm("هل أنت أصلًا متأكد من مسح كافة البيانات بشكل نهائي؟")) {
+            if (confirm("هل أنت متأكد من مسح كافة البيانات بشكل نهائي؟")) {
                 for (let storeName of ["accounts", "incomes", "expenses", "installments", "salarySources", "debts", "transactions"]) {
                     const tx = AppState.db.transaction(storeName, "readwrite");
                     await tx.objectStore(storeName).clear();
@@ -1759,4 +1925,5 @@
         });
     </script>
 </body>
-</html> 
+</html>
+```
