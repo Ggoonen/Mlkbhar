@@ -10,42 +10,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Arabic Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <!-- html2pdf.js Library for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        samsung: {
-                            bgDark: '#0B0F19',
-                            cardDark: '#161C2E',
-                            cardLight: '#1E2640',
-                            accent: '#3B82F6',
-                            accentHover: '#2563EB',
-                            borderDark: '#2D3748',
-                            income: '#10B981',
-                            expense: '#EF4444',
-                            installment: '#F59E0B',
-                            salary: '#8B5CF6',
-                            outing: '#EC4899'
-                        }
-                    },
-                    fontFamily: {
-                        arabic: ['Tajawal', 'Cairo', 'sans-serif'],
-                        number: ['Cairo', 'Tajawal', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
+        /* Custom Font Import from User URL */
+        @font-face {
+            font-family: 'CustomAppFont';
+            src: url('https://files.catbox.moe/0mxb07.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root {
             --sat: env(safe-area-inset-top, 0px);
             --sab: env(safe-area-inset-bottom, 0px);
@@ -56,7 +33,7 @@
         }
 
         body {
-            font-family: 'Tajawal', sans-serif;
+            font-family: 'CustomAppFont', system-ui, -apple-system, sans-serif !important;
             background-color: #0B0F19;
             color: #F3F4F6;
             -webkit-tap-highlight-color: transparent;
@@ -71,6 +48,7 @@
 
         /* Fix Safari Default Inputs */
         input, select, textarea, button {
+            font-family: 'CustomAppFont', system-ui, -apple-system, sans-serif !important;
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
@@ -85,7 +63,7 @@
         }
 
         .num-font {
-            font-family: 'Cairo', 'Tajawal', sans-serif;
+            font-family: 'CustomAppFont', sans-serif !important;
             font-weight: 700;
         }
 
@@ -166,6 +144,34 @@
             padding-bottom: calc(0.5rem + var(--sab));
         }
     </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        samsung: {
+                            bgDark: '#0B0F19',
+                            cardDark: '#161C2E',
+                            cardLight: '#1E2640',
+                            accent: '#3B82F6',
+                            accentHover: '#2563EB',
+                            borderDark: '#2D3748',
+                            income: '#10B981',
+                            expense: '#EF4444',
+                            installment: '#F59E0B',
+                            salary: '#8B5CF6',
+                            outing: '#EC4899'
+                        }
+                    },
+                    fontFamily: {
+                        arabic: ['CustomAppFont', 'sans-serif'],
+                        number: ['CustomAppFont', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="max-w-md mx-auto min-h-screen relative overflow-x-hidden">
 
@@ -1833,9 +1839,9 @@
             const totalBal = walletBal + bankBal;
 
             container.innerHTML = `
-                <div style="padding: 20px; font-family: 'Tajawal', sans-serif; color: #111;">
+                <div style="padding: 20px; font-family: 'CustomAppFont', sans-serif; color: #111;">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-between: space-between; align-items: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 20px;">
                         <div>
                             <h1 style="font-size: 20px; font-weight: 800; color: #1e293b; margin: 0;">كشف حساب وتقارير الماليّة الشخصية</h1>
                             <p style="font-size: 11px; color: #64748b; margin-top: 4px;">تاريخ التقرير: ${dateStr}</p>
@@ -1849,15 +1855,15 @@
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                         <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
                             <span style="font-size: 10px; color: #64748b; font-weight: bold; display: block;">إجمالي السيولة النقدية</span>
-                            <strong style="font-size: 16px; color: #0f172a; font-family: 'Cairo';">${formatMoney(totalBal)} IQD</strong>
+                            <strong style="font-size: 16px; color: #0f172a; font-family: 'CustomAppFont';">${formatMoney(totalBal)} IQD</strong>
                         </div>
                         <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
                             <span style="font-size: 10px; color: #64748b; font-weight: bold; display: block;">المحفظة الشخصية</span>
-                            <strong style="font-size: 14px; color: #2563eb; font-family: 'Cairo';">${formatMoney(walletBal)} IQD</strong>
+                            <strong style="font-size: 14px; color: #2563eb; font-family: 'CustomAppFont';">${formatMoney(walletBal)} IQD</strong>
                         </div>
                         <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px;">
                             <span style="font-size: 10px; color: #64748b; font-weight: bold; display: block;">البنك المنزلي</span>
-                            <strong style="font-size: 14px; color: #059669; font-family: 'Cairo';">${formatMoney(bankBal)} IQD</strong>
+                            <strong style="font-size: 14px; color: #059669; font-family: 'CustomAppFont';">${formatMoney(bankBal)} IQD</strong>
                         </div>
                     </div>
 
@@ -1876,10 +1882,10 @@
                             ${AppState.transactions.length === 0 ? '<tr><td colspan="4" style="text-align:center; padding:10px;">لا توجد عمليات مسجلة</td></tr>' : 
                             [...AppState.transactions].reverse().map(t => `
                                 <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 6px 8px; font-family: 'Cairo'; border: 1px solid #cbd5e1;">${formatDate(t.date)}</td>
+                                    <td style="padding: 6px 8px; font-family: 'CustomAppFont'; border: 1px solid #cbd5e1;">${formatDate(t.date)}</td>
                                     <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">${t.description || t.type}</td>
                                     <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">${t.accountId ? (AppState.accounts[t.accountId]?.name || '-') : '-'}</td>
-                                    <td style="padding: 6px 8px; font-weight: bold; font-family: 'Cairo'; text-align: left; border: 1px solid #cbd5e1;">${formatMoney(t.amount)} IQD</td>
+                                    <td style="padding: 6px 8px; font-weight: bold; font-family: 'CustomAppFont'; text-align: left; border: 1px solid #cbd5e1;">${formatMoney(t.amount)} IQD</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -1903,7 +1909,7 @@
                                     <td style="padding: 6px 8px; font-weight: bold; border: 1px solid #cbd5e1;">${d.person}</td>
                                     <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">${d.type === 'RECEIVABLE' ? 'أطلب (طالب)' : 'عليّ (مطلوب)'}</td>
                                     <td style="padding: 6px 8px; border: 1px solid #cbd5e1;">${d.reason || '-'}</td>
-                                    <td style="padding: 6px 8px; font-weight: bold; font-family: 'Cairo'; text-align: left; border: 1px solid #cbd5e1;">${formatMoney(d.amount)} IQD</td>
+                                    <td style="padding: 6px 8px; font-weight: bold; font-family: 'CustomAppFont'; text-align: left; border: 1px solid #cbd5e1;">${formatMoney(d.amount)} IQD</td>
                                 </tr>
                             `).join('')}
                         </tbody>
